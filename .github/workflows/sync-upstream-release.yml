@@ -101,8 +101,8 @@ jobs:
           echo "Re-applying my-ECC curated profile..."
           node scripts/apply-my-ecc-profile.mjs
 
-          if ! git diff --quiet -- .claude-plugin/plugin.json .claude-plugin/marketplace.json ecc/setup.json; then
-            git add .claude-plugin/plugin.json .claude-plugin/marketplace.json ecc/setup.json
+          if ! git diff --quiet -- .claude-plugin/plugin.json .claude-plugin/marketplace.json ecc/setup.json .mcp.json; then
+            git add .claude-plugin/plugin.json .claude-plugin/marketplace.json ecc/setup.json .mcp.json
             git commit -m "chore: refresh my-ECC curated profile"
           fi
 
