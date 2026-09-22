@@ -119,9 +119,22 @@ const hookSetup = {
   }
 };
 
+const currentMcp = fs.existsSync(MCP_CONFIG) ? readJson(MCP_CONFIG) : { mcpServers: {} };
+if (!currentMcp.mcpServers || typeof currentMcp.mcpServers !== 'object' || Array.isArray(currentMcp.mcpServers)) {
+  fail('.mcp.json must contain an object-valued mcpServers field.');
+}
+const expectedMcp = {
+  ...currentMcp,
+  mcpServers: {
+    ...currentMcp.mcpServers,
+    ...CURATED_MCP_SERVERS
+  }
+};
+
 const expectedPlugin = JSON.stringify(plugin, null, 2) + '\n';
 const expectedMarketplace = JSON.stringify(marketplace, null, 2) + '\n';
 const expectedHookSetup = JSON.stringify(hookSetup, null, 2) + '\n';
+const expectedMcpConfig = JSON.stringify(expectedMcp, null, 2) + '\n';
 
 if (CHECK) {
   if (!fs.existsSync(PLUGIN) || fs.readFileSync(PLUGIN, 'utf8') !== expectedPlugin) fail('plugin.json is stale; regenerate it with this script.');
