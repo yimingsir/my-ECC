@@ -1,0 +1,78 @@
+name: Sync ECC upstream release
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-upstream-release
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout fork
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get latest upstream release
+        id: upstream
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          TAG=$(gh api \
+            repos/affaan-m/ECC/releases/latest \
+            --jq '.tag_name')
+
+          echo "Latest upstream release: $TAG"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Fetch upstream
+        run: |
+          set -euo pipefail
+
+          git remote add upstream https://github.com/affaan-m/ECC.git
+          git fetch upstream --tags --prune
+
+      - name: Merge upstream release
+        env:
+          RELEASE_TAG: ${{ steps.upstream.outputs.tag }}
+        run: |
+          set -euo pipefail
+
+          git checkout main
+
+          UPSTREAM_COMMIT=$(git rev-list -n 1 "$RELEASE_TAG")
+
+          echo "Upstream release: $RELEASE_TAG"
+          echo "Upstream commit: $UPSTREAM_COMMIT"
+          echo "Current fork HEAD: $(git rev-parse HEAD)"
+
+          if git merge-base --is-ancestor "$UPSTREAM_COMMIT" HEAD; then
+            echo "Already contains $RELEASE_TAG. Nothing to do."
+            exit 0
+          fi
+
+          echo "New upstream release detected. Merging $RELEASE_TAG..."
+
+          git merge --no-edit "$RELEASE_TAG"
+
+          echo "Push updated main..."
+          git push origin main
+
+          echo "Successfully synced $RELEASE_TAG"
