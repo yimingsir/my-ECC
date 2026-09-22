@@ -9,21 +9,23 @@ Curated ECC overlay for a Superpowers-first Claude Code workflow.
 /plugin install my-ecc@my-ecc
 ```
 
-## Design
+## Architecture
 
 Superpowers owns the main development workflow. my-ECC supplies selected ECC skills, specialist agents, useful commands, and ECC standard hooks.
 
-The selected profile lives in `config/my-ecc-profile.json`.
+`config/my-ecc-profile.json` is the only file you edit to change the curated component set.
 
-The generator `scripts/apply-my-ecc-profile.mjs` validates every selected upstream component and generates `.claude-plugin/marketplace.json`.
+`scripts/apply-my-ecc-profile.mjs` generates both `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`.
+
+`plugin.json` is the component authority. The marketplace entry only publishes the plugin source and metadata.
 
 ## Automatic upstream updates
 
-After each upstream ECC release, the sync workflow merges the release, resolves only the expected `.claude-plugin/marketplace.json` conflict, re-applies the curated profile, and pushes the result.
+The sync workflow merges the latest ECC release, resolves only expected conflicts in `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`, re-applies the profile, and pushes the result.
 
-Any other merge conflict fails the workflow instead of silently overwriting custom changes.
+Unexpected conflicts fail the workflow instead of silently overwriting custom changes.
 
-Plugin version is `<ECC VERSION>-my.<profile_version>`, so upstream releases become new plugin versions automatically.
+Plugin version is `<ECC VERSION>-my.<profile_version>`, so every upstream release becomes a new plugin version automatically.
 
 ## Rules
 
@@ -32,10 +34,16 @@ Claude Code plugin manifests do not distribute always-loaded Rules. Keep these s
 
 ## Deferred
 
-`continuous-learning-v2`, `skill-stocktake`, and `strategic-compact` are intentionally not enabled in the default profile.
+`continuous-learning-v2`, `skill-stocktake`, and `strategic-compact` are intentionally not enabled by default.
 
 ## Validate
 
 ```bash
 node scripts/apply-my-ecc-profile.mjs --check
+```
+
+Regenerate after changing the profile:
+
+```bash
+node scripts/apply-my-ecc-profile.mjs
 ```

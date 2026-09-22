@@ -70,36 +70,43 @@ jobs:
 
           HAS_NEW_RELEASE=true
 
+          HAS_NEW_RELEASE=true
+
           if git merge-base --is-ancestor "$UPSTREAM_COMMIT" HEAD; then
             HAS_NEW_RELEASE=false
             echo "Already contains $RELEASE_TAG. Checking curated overlay for drift..."
           else
             echo "New upstream release detected. Merging $RELEASE_TAG..."
-
             if ! git merge --no-edit "$RELEASE_TAG"; then
               echo "Merge reported conflicts. Inspecting unresolved paths..."
               CONFLICTS=$(git diff --name-only --diff-filter=U)
-              if [ "$CONFLICTS" = ".claude-plugin/marketplace.json" ]; then
-                echo "Resolving expected my-ECC marketplace overlay conflict with upstream version..."
-                git checkout --theirs .claude-plugin/marketplace.json
-                git add .claude-plugin/marketplace.json
-                git commit --no-edit
-              else
+              BAD_CONFLICT=false
+              while IFS= read -r conflict; do
+                case "$conflict" in
+                  .claude-plugin/plugin.json|.claude-plugin/marketplace.json) ;;
+                  *) BAD_CONFLICT=true ;;
+                esac
+              done <<< "$CONFLICTS"
+              if [ "$BAD_CONFLICT" = true ] || [ -z "$CONFLICTS" ]; then
                 echo "Unexpected merge conflicts:"
                 printf '%s\n' "$CONFLICTS"
                 exit 1
               fi
+              while IFS= read -r conflict; do
+                git checkout --theirs "$conflict"
+                git add "$conflict"
+              done <<< "$CONFLICTS"
+              git commit --no-edit
             fi
           fi
 
           echo "Re-applying my-ECC curated profile..."
           node scripts/apply-my-ecc-profile.mjs
 
-          if ! git diff --quiet -- .claude-plugin/marketplace.json; then
-            git add .claude-plugin/marketplace.json
+          if ! git diff --quiet -- .claude-plugin/plugin.json .claude-plugin/marketplace.json; then
+            git add .claude-plugin/plugin.json .claude-plugin/marketplace.json
             git commit -m "chore: refresh my-ECC curated profile"
           fi
-
           AUTH_HEADER="AUTHORIZATION: bearer $GITHUB_TOKEN"
           echo "Push updated main..."
           git -c http.extraheader="$AUTH_HEADER" push origin main
