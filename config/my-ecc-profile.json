@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "my-ecc",
-  "profile_version": 2,
+  "profile_version": 3,
   "description": "Curated ECC profile for Go/Python/Vue/PostgreSQL/MySQL/Redis projects, designed to complement Superpowers.",
   "hook_profile": "standard",
   "hooks_enabled": true,
@@ -19,6 +19,7 @@
     "django-celery",
     "docker-patterns",
     "e2e-testing",
+    "error-handling",
     "fastapi-patterns",
     "golang-patterns",
     "golang-testing",
@@ -30,6 +31,10 @@
     "search-first",
     "security-review",
     "documentation-lookup",
+    "contract-first",
+    "ai-regression-testing",
+    "production-audit",
+    "deployment-patterns",
     "vue-patterns"
   ],
   "agents": [
@@ -43,7 +48,9 @@
     "fastapi-reviewer",
     "go-build-resolver",
     "go-reviewer",
+    "pr-test-analyzer",
     "python-reviewer",
+    "silent-failure-hunter",
     "refactor-cleaner",
     "security-reviewer",
     "vue-reviewer"
@@ -68,9 +75,19 @@
   "optional_next_stage": [
     "continuous-learning-v2",
     "skill-stocktake",
-    "strategic-compact"
+    "strategic-compact",
+    "frontend-design-direction",
+    "living-docs-governance",
+    "codebase-onboarding",
+    "harness-optimizer",
+    "type-design-analyzer",
+    "performance-optimizer",
+    "a11y-architect"
   ],
   "excluded_as_redundant": [
-    "coding-standards"
+    "coding-standards",
+    "tdd-workflow",
+    "verification-loop",
+    "delivery-gate"
   ]
 }

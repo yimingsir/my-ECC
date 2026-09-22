@@ -19,6 +19,25 @@ Superpowers owns the main development workflow. my-ECC supplies selected ECC ski
 
 `plugin.json` is the component authority. Claude Code 2.1+ auto-loads `hooks/hooks.json` from an installed plugin, so the plugin manifest intentionally does **not** declare a `hooks` field.
 
+## Curated engineering layer
+
+The default profile is intentionally focused on your current stack and Superpowers-first workflow.
+
+### Added in profile v3
+
+**Agents**
+- `silent-failure-hunter` — finds swallowed errors, dangerous fallbacks, missing error propagation, and failure paths that look successful.
+- `pr-test-analyzer` — checks whether changed behavior is actually covered by meaningful tests, including edge and error paths.
+
+**Skills**
+- `error-handling` — robust error propagation, retries, circuit breakers, and user/developer error boundaries.
+- `contract-first` — keeps frontend/backend and service boundaries aligned through a canonical contract.
+- `ai-regression-testing` — targets AI-assisted development blind spots and regression coverage.
+- `production-audit` — audits production-readiness beyond ordinary build/lint/test checks.
+- `deployment-patterns` — covers CI/CD, rollout strategy, health checks, and rollback patterns.
+
+These are additive engineering capabilities; they do not replace Superpowers' primary workflow.
+
 ## Hook overlay
 
 The hook profile is `standard`, with two ECC hooks disabled because your project-level hooks already own the corresponding responsibilities:
@@ -30,6 +49,27 @@ The following ECC safety/context hooks remain enabled, including Bash preflight,
 
 The disabled hook IDs are validated against `hooks/hooks.metadata.json` on every profile generation. This makes an upstream hook rename/removal fail the sync workflow instead of silently changing your policy.
 
+## Rules
+
+Rules are intentionally not copied into the plugin profile. Keep the upstream ECC rule tree available for reference, while maintaining your chosen always-loaded Rules separately:
+`rules/common`, `rules/golang`, `rules/python`, `rules/typescript`, `rules/vue`.
+
+## Deferred
+
+The default profile intentionally defers heavier or more specialized capabilities:
+- `continuous-learning-v2`
+- `skill-stocktake`
+- `strategic-compact`
+- `frontend-design-direction`
+- `living-docs-governance`
+- `codebase-onboarding`
+- `harness-optimizer`
+- `type-design-analyzer`
+- `performance-optimizer`
+- `a11y-architect`
+
+They remain upstream-visible and can be promoted into the profile later without changing the architecture.
+
 ## Automatic upstream updates
 
 The sync workflow merges the latest ECC release, resolves only expected conflicts in `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`, re-applies the profile, and pushes the result.
@@ -37,15 +77,6 @@ The sync workflow merges the latest ECC release, resolves only expected conflict
 Unexpected conflicts fail the workflow instead of silently overwriting custom changes.
 
 Plugin version is `<ECC VERSION>-my.<profile_version>`, so every upstream release becomes a new plugin version automatically.
-
-## Rules
-
-Claude Code plugin manifests do not distribute always-loaded Rules. Keep these separate:
-`rules/common`, `rules/golang`, `rules/python`, `rules/typescript`, `rules/vue`.
-
-## Deferred
-
-`continuous-learning-v2`, `skill-stocktake`, and `strategic-compact` are intentionally not enabled by default.
 
 ## Validate
 
