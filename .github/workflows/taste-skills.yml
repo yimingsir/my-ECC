@@ -1,19 +1,5 @@
-name: Standalone taste workflows
-
 on:
-  pull_request:
-    paths:
-      - 'skills/taste-application/**'
-      - 'skills/taste-distillation/**'
-      - 'tests/test_taste_*.py'
-      - '.github/workflows/taste-skills.yml'
-  push:
-    branches: [main]
-    paths:
-      - 'skills/taste-application/**'
-      - 'skills/taste-distillation/**'
-      - 'tests/test_taste_*.py'
-      - '.github/workflows/taste-skills.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read
