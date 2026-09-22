@@ -9,7 +9,21 @@ const PLUGIN = path.join(ROOT, '.claude-plugin', 'plugin.json');
 const HOOK_SETUP = path.join(ROOT, 'ecc', 'setup.json');
 const HOOK_METADATA = path.join(ROOT, 'hooks', 'hooks.metadata.json');
 const VERSION = path.join(ROOT, 'VERSION');
+const MCP_CONFIG = path.join(ROOT, '.mcp.json');
 const CHECK = process.argv.includes('--check');
+
+const CURATED_MCP_SERVERS = {
+  'chrome-devtools': {
+    command: 'npx',
+    args: [
+      '-y',
+      'chrome-devtools-mcp@latest',
+      '--headless',
+      '--isolated',
+      '--chrome-arg=--no-sandbox'
+    ]
+  }
+};
 
 const fail = (message) => {
   console.error('[my-ECC] ERROR: ' + message);
@@ -113,11 +127,13 @@ if (CHECK) {
   if (!fs.existsSync(PLUGIN) || fs.readFileSync(PLUGIN, 'utf8') !== expectedPlugin) fail('plugin.json is stale; regenerate it with this script.');
   if (!fs.existsSync(MARKETPLACE) || fs.readFileSync(MARKETPLACE, 'utf8') !== expectedMarketplace) fail('marketplace.json is stale; regenerate it with this script.');
   if (!fs.existsSync(HOOK_SETUP) || fs.readFileSync(HOOK_SETUP, 'utf8') !== expectedHookSetup) fail('ecc/setup.json is stale; regenerate it with this script.');
+  if (!fs.existsSync(MCP_CONFIG) || fs.readFileSync(MCP_CONFIG, 'utf8') !== expectedMcpConfig) fail('.mcp.json is stale; regenerate it with this script.');
   console.log('[my-ECC] Profile is valid for ECC ' + eccVersion + ' (' + pluginVersion + ').');
 } else {
   fs.mkdirSync(path.dirname(HOOK_SETUP), { recursive: true });
   fs.writeFileSync(PLUGIN, expectedPlugin);
   fs.writeFileSync(MARKETPLACE, expectedMarketplace);
   fs.writeFileSync(HOOK_SETUP, expectedHookSetup);
-  console.log('[my-ECC] Generated my-ECC plugin + marketplace + hook setup for ECC ' + eccVersion + ' (' + pluginVersion + ').');
+  fs.writeFileSync(MCP_CONFIG, expectedMcpConfig);
+  console.log('[my-ECC] Generated my-ECC plugin + marketplace + hook setup + MCP overlay for ECC ' + eccVersion + ' (' + pluginVersion + ').');
 }
