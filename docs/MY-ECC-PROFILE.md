@@ -9,6 +9,26 @@ Curated ECC overlay for a Superpowers-first Claude Code workflow.
 /plugin install my-ecc@my-ecc
 ```
 
+Install the curated Rules separately:
+
+```bash
+node scripts/install-my-ecc-rules.mjs
+```
+
+This installs the selected Rules to `~/.claude/rules/ecc/`.
+
+For project-local Rules:
+
+```bash
+node scripts/install-my-ecc-rules.mjs --project
+```
+
+Preview without changing files:
+
+```bash
+node scripts/install-my-ecc-rules.mjs --dry-run
+```
+
 ## Architecture
 
 Superpowers owns the main development workflow. my-ECC supplies selected ECC skills, specialist agents, useful commands, and ECC standard hooks.
@@ -51,8 +71,35 @@ The disabled hook IDs are validated against `hooks/hooks.metadata.json` on every
 
 ## Rules
 
-Rules are intentionally not copied into the plugin profile. Keep the upstream ECC rule tree available for reference, while maintaining your chosen always-loaded Rules separately:
-`rules/common`, `rules/golang`, `rules/python`, `rules/typescript`, `rules/vue`.
+Rules are intentionally **not** part of the Claude Code plugin manifest. Install only the curated, stable Rules you want as a separate user- or project-level layer.
+
+The installer currently manages:
+
+```text
+rules/common/coding-style.md
+rules/common/security.md
+
+rules/golang/coding-style.md
+rules/golang/patterns.md
+rules/golang/security.md
+
+rules/python/coding-style.md
+rules/python/patterns.md
+rules/python/security.md
+
+rules/typescript/coding-style.md
+rules/typescript/security.md
+
+rules/vue/coding-style.md
+rules/vue/patterns.md
+rules/vue/security.md
+```
+
+The installer preserves the `common/`, `golang/`, `python/`, `typescript/`, and `vue/` directory structure because language-specific Rules reference their common counterparts.
+
+It only writes these managed files; unrelated Rules already under `~/.claude/rules/` or `.claude/rules/` are not removed.
+
+Workflow-heavy Rules such as common testing, git workflow, hooks, and agents are intentionally excluded. Those responsibilities remain with Superpowers, my-ECC hooks, and my-ECC Agents/Skills to avoid competing instructions.
 
 ## Deferred
 
@@ -82,6 +129,7 @@ Plugin version is `<ECC VERSION>-my.<profile_version>`, so every upstream releas
 
 ```bash
 node scripts/apply-my-ecc-profile.mjs --check
+node scripts/install-my-ecc-rules.mjs --check
 node tests/lib/hook-flags.test.js
 ```
 
