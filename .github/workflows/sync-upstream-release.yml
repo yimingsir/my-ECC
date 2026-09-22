@@ -81,7 +81,7 @@ jobs:
               BAD_CONFLICT=false
               while IFS= read -r conflict; do
                 case "$conflict" in
-                  .claude-plugin/plugin.json|.claude-plugin/marketplace.json) ;;
+                  .claude-plugin/plugin.json|.claude-plugin/marketplace.json|.mcp.json) ;;
                   *) BAD_CONFLICT=true ;;
                 esac
               done <<< "$CONFLICTS"
