@@ -1,10 +1,14 @@
 {
   "schema_version": 1,
   "name": "my-ecc",
-  "profile_version": 1,
+  "profile_version": 2,
   "description": "Curated ECC profile for Go/Python/Vue/PostgreSQL/MySQL/Redis projects, designed to complement Superpowers.",
   "hook_profile": "standard",
   "hooks_enabled": true,
+  "disabled_hooks": [
+    "post:quality-gate",
+    "stop:format-typecheck"
+  ],
   "skills": [
     "api-design",
     "database-migrations",

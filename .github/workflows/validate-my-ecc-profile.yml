@@ -31,3 +31,6 @@ jobs:
 
       - name: Validate hook schema
         run: node scripts/ci/validate-hooks.js
+
+      - name: Validate managed hook flags
+        run: node tests/lib/hook-flags.test.js

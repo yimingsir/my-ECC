@@ -1,6 +1,6 @@
 {
   "name": "my-ecc",
-  "version": "2.2.2-my.1",
+  "version": "2.2.2-my.2",
   "description": "Curated ECC profile for Go/Python/Vue/PostgreSQL/MySQL/Redis projects, designed to complement Superpowers.",
   "author": {
     "name": "yimingsir",
@@ -91,6 +91,5 @@
     "./commands/test-coverage.md",
     "./commands/update-docs.md",
     "./commands/vue-review.md"
-  ],
-  "hooks": "./hooks/hooks.json"
+  ]
 }

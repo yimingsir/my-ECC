@@ -6,6 +6,8 @@ const ROOT = process.cwd();
 const PROFILE = path.join(ROOT, 'config', 'my-ecc-profile.json');
 const MARKETPLACE = path.join(ROOT, '.claude-plugin', 'marketplace.json');
 const PLUGIN = path.join(ROOT, '.claude-plugin', 'plugin.json');
+const HOOK_SETUP = path.join(ROOT, 'ecc', 'setup.json');
+const HOOK_METADATA = path.join(ROOT, 'hooks', 'hooks.metadata.json');
 const VERSION = path.join(ROOT, 'VERSION');
 const CHECK = process.argv.includes('--check');
 
@@ -28,6 +30,10 @@ for (const key of ['skills', 'agents', 'commands']) {
   if (!Array.isArray(profile[key]) || profile[key].length === 0) fail('Profile field ' + key + ' must be a non-empty array.');
   if (new Set(profile[key]).size !== profile[key].length) fail('Profile field ' + key + ' contains duplicates.');
 }
+
+if (!Array.isArray(profile.disabled_hooks)) fail('Profile field disabled_hooks must be an array.');
+if (new Set(profile.disabled_hooks).size !== profile.disabled_hooks.length) fail('Profile field disabled_hooks contains duplicates.');
+
 if (!['minimal', 'standard', 'strict'].includes(profile.hook_profile)) fail('Unsupported hook profile: ' + profile.hook_profile);
 
 const missing = [];
@@ -35,10 +41,22 @@ for (const item of profile.skills) if (!fs.existsSync(path.join(ROOT, 'skills', 
 for (const item of profile.agents) if (!fs.existsSync(path.join(ROOT, 'agents', item + '.md'))) missing.push('agents/' + item + '.md');
 for (const item of profile.commands) if (!fs.existsSync(path.join(ROOT, 'commands', item + '.md'))) missing.push('commands/' + item + '.md');
 if (!fs.existsSync(path.join(ROOT, 'hooks', 'hooks.json'))) missing.push('hooks/hooks.json');
+if (!fs.existsSync(HOOK_METADATA)) missing.push('hooks/hooks.metadata.json');
 if (missing.length) {
   console.error('[my-ECC] Missing upstream components:');
   for (const item of missing) console.error('  - ' + item);
   process.exit(1);
+}
+
+const hookMetadata = readJson(HOOK_METADATA);
+const hookIds = new Set(
+  Object.values(hookMetadata.entries || {})
+    .flat()
+    .map(entry => entry.id)
+    .filter(Boolean)
+);
+for (const hookId of profile.disabled_hooks) {
+  if (!hookIds.has(hookId)) fail('Profile disabled_hooks references unknown ECC hook: ' + hookId);
 }
 
 const pluginVersion = eccVersion + '-my.' + profile.profile_version;
@@ -57,8 +75,7 @@ const plugin = {
   },
   skills: profile.skills.map((item) => './skills/' + item),
   agents: profile.agents.map((item) => './agents/' + item + '.md'),
-  commands: profile.commands.map((item) => './commands/' + item + '.md'),
-  hooks: './hooks/hooks.json'
+  commands: profile.commands.map((item) => './commands/' + item + '.md')
 };
 
 const marketplace = {
@@ -80,15 +97,27 @@ const marketplace = {
   }]
 };
 
+const hookSetup = {
+  hooks: {
+    enabled: Boolean(profile.hooks_enabled),
+    profile: profile.hook_profile,
+    disabled: profile.disabled_hooks
+  }
+};
+
 const expectedPlugin = JSON.stringify(plugin, null, 2) + '\n';
 const expectedMarketplace = JSON.stringify(marketplace, null, 2) + '\n';
+const expectedHookSetup = JSON.stringify(hookSetup, null, 2) + '\n';
 
 if (CHECK) {
   if (!fs.existsSync(PLUGIN) || fs.readFileSync(PLUGIN, 'utf8') !== expectedPlugin) fail('plugin.json is stale; regenerate it with this script.');
   if (!fs.existsSync(MARKETPLACE) || fs.readFileSync(MARKETPLACE, 'utf8') !== expectedMarketplace) fail('marketplace.json is stale; regenerate it with this script.');
+  if (!fs.existsSync(HOOK_SETUP) || fs.readFileSync(HOOK_SETUP, 'utf8') !== expectedHookSetup) fail('ecc/setup.json is stale; regenerate it with this script.');
   console.log('[my-ECC] Profile is valid for ECC ' + eccVersion + ' (' + pluginVersion + ').');
 } else {
+  fs.mkdirSync(path.dirname(HOOK_SETUP), { recursive: true });
   fs.writeFileSync(PLUGIN, expectedPlugin);
   fs.writeFileSync(MARKETPLACE, expectedMarketplace);
-  console.log('[my-ECC] Generated my-ECC plugin + marketplace for ECC ' + eccVersion + ' (' + pluginVersion + ').');
+  fs.writeFileSync(HOOK_SETUP, expectedHookSetup);
+  console.log('[my-ECC] Generated my-ECC plugin + marketplace + hook setup for ECC ' + eccVersion + ' (' + pluginVersion + ').');
 }

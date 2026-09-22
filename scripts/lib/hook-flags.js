@@ -85,16 +85,24 @@ function getHookProfile(env = process.env, managed = readManagedHookConfig(env))
   return VALID_PROFILES.has(raw) ? raw : 'standard';
 }
 
-function getDisabledHookIds(env = process.env) {
-  const raw = String(env.ECC_DISABLED_HOOKS || '');
-  if (!raw.trim()) return new Set();
+function asIdList(value) {
+  if (Array.isArray(value)) {
+    return value.map(normalizeId).filter(Boolean);
+  }
+  return String(value || '')
+    .split(',')
+    .map(normalizeId)
+    .filter(Boolean);
+}
 
-  return new Set(
-    raw
-      .split(',')
-      .map(v => normalizeId(v))
-      .filter(Boolean)
-  );
+function getDisabledHookIds(env = process.env, managed = readManagedHookConfig(env)) {
+  const values = [
+    env.ECC_DISABLED_HOOKS,
+    managed.disabled,
+    managed.disabled_hooks
+  ];
+
+  return new Set(values.flatMap(asIdList));
 }
 
 function parseProfiles(rawProfiles, fallback = ['standard', 'strict']) {
@@ -129,7 +137,7 @@ function isHookEnabled(hookId, options = {}) {
   const id = normalizeId(hookId);
   if (!id) return true;
 
-  const disabled = getDisabledHookIds(env);
+  const disabled = getDisabledHookIds(env, managed);
   if (disabled.has(id)) {
     return false;
   }

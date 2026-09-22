@@ -70,8 +70,6 @@ jobs:
 
           HAS_NEW_RELEASE=true
 
-          HAS_NEW_RELEASE=true
-
           if git merge-base --is-ancestor "$UPSTREAM_COMMIT" HEAD; then
             HAS_NEW_RELEASE=false
             echo "Already contains $RELEASE_TAG. Checking curated overlay for drift..."
@@ -103,10 +101,11 @@ jobs:
           echo "Re-applying my-ECC curated profile..."
           node scripts/apply-my-ecc-profile.mjs
 
-          if ! git diff --quiet -- .claude-plugin/plugin.json .claude-plugin/marketplace.json; then
-            git add .claude-plugin/plugin.json .claude-plugin/marketplace.json
+          if ! git diff --quiet -- .claude-plugin/plugin.json .claude-plugin/marketplace.json ecc/setup.json; then
+            git add .claude-plugin/plugin.json .claude-plugin/marketplace.json ecc/setup.json
             git commit -m "chore: refresh my-ECC curated profile"
           fi
+
           AUTH_HEADER="AUTHORIZATION: bearer $GITHUB_TOKEN"
           echo "Push updated main..."
           git -c http.extraheader="$AUTH_HEADER" push origin main
