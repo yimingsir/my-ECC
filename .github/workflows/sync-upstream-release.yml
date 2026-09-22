@@ -31,11 +31,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-
-          TAG=$(gh api \
-            repos/affaan-m/ECC/releases/latest \
-            --jq '.tag_name')
-
+          TAG=$(gh api repos/affaan-m/ECC/releases/latest --jq '.tag_name')
           echo "Latest upstream release: $TAG"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
@@ -49,28 +45,14 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-
-          for workflow in \
-            ci.yml \
-            discussion-announce.yml \
-            generator-generic-ossf-slsa3-publish.yml \
-            maintenance.yml \
-            monthly-metrics.yml \
-            release-announce.yml \
-            release.yml \
-            supply-chain-watch.yml \
-            taste-skills.yml
-          do
+          for workflow in ci.yml discussion-announce.yml generator-generic-ossf-slsa3-publish.yml maintenance.yml monthly-metrics.yml release-announce.yml release.yml supply-chain-watch.yml taste-skills.yml; do
             echo "Disabling $workflow..."
-            gh api \
-              --method PUT \
-              "repos/${GITHUB_REPOSITORY}/actions/workflows/${workflow}/disable"
+            gh api --method PUT "repos/${GITHUB_REPOSITORY}/actions/workflows/${workflow}/disable"
           done
 
       - name: Fetch upstream
         run: |
           set -euo pipefail
-
           git remote add upstream https://github.com/affaan-m/ECC.git
           git fetch upstream --tags --prune
 
@@ -80,11 +62,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-
           git checkout main
-
           UPSTREAM_COMMIT=$(git rev-list -n 1 "$RELEASE_TAG")
-
           echo "Upstream release: $RELEASE_TAG"
           echo "Upstream commit: $UPSTREAM_COMMIT"
           echo "Current fork HEAD: $(git rev-parse HEAD)"
@@ -95,13 +74,11 @@ jobs:
           fi
 
           echo "New upstream release detected. Merging $RELEASE_TAG..."
-
           if ! git merge --no-edit "$RELEASE_TAG"; then
             echo "Merge reported conflicts. Inspecting unresolved paths..."
-
             CONFLICTS=$(git diff --name-only --diff-filter=U)
             if [ "$CONFLICTS" = ".claude-plugin/marketplace.json" ]; then
-              echo "Resolving expected my-ECC overlay conflict by taking upstream marketplace..."
+              echo "Resolving expected my-ECC marketplace overlay conflict with upstream version..."
               git checkout --theirs .claude-plugin/marketplace.json
               git add .claude-plugin/marketplace.json
               git commit --no-edit
@@ -121,13 +98,11 @@ jobs:
           fi
 
           AUTH_HEADER="AUTHORIZATION: bearer $GITHUB_TOKEN"
-
           echo "Push updated main..."
           git -c http.extraheader="$AUTH_HEADER" push origin main
 
           echo "Sync release tag $RELEASE_TAG..."
           REMOTE_TAG_COMMIT=$(git -c http.extraheader="$AUTH_HEADER" ls-remote origin "refs/tags/$RELEASE_TAG^{}" | awk 'NR==1 {print $1}')
-
           if [ -z "$REMOTE_TAG_COMMIT" ]; then
             git -c http.extraheader="$AUTH_HEADER" push origin "refs/tags/$RELEASE_TAG"
             echo "Created tag $RELEASE_TAG on fork."
