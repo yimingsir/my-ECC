@@ -6,6 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: write
   contents: write
 
 concurrency:
@@ -42,6 +43,29 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Keep upstream workflows disabled
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          for workflow in \
+            ci.yml \
+            discussion-announce.yml \
+            generator-generic-ossf-slsa3-publish.yml \
+            maintenance.yml \
+            monthly-metrics.yml \
+            release-announce.yml \
+            release.yml \
+            supply-chain-watch.yml \
+            taste-skills.yml
+          do
+            echo "Disabling $workflow..."
+            gh api \
+              --method PUT \
+              "repos/${GITHUB_REPOSITORY}/actions/workflows/${workflow}/disable"
+          done
 
       - name: Fetch upstream
         run: |
