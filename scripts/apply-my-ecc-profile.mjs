@@ -28,7 +28,7 @@ if (!fs.existsSync(PROFILE) || !fs.existsSync(VERSION)) {
 const profile = readJson(PROFILE);
 const eccVersion = fs.readFileSync(VERSION, 'utf8').trim();
 
-if (!/^\\d+\\.\\d+\\.\\d+/.test(eccVersion)) {
+if (!/^\d+\.\d+\.\d+/.test(eccVersion)) {
   fail('Unexpected ECC version: ' + eccVersion);
 }
 
