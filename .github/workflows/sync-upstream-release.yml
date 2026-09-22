@@ -22,6 +22,7 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: false
 
       - name: Get latest upstream release
         id: upstream
