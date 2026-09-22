@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 'use strict';
 
+const { spawn } = require('child_process');
+
 /**
  * Plan Canvas CLI — open plan artifacts in a browser review canvas and block
  * on human feedback.
