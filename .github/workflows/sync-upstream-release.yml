@@ -74,11 +74,12 @@ jobs:
 
           git merge --no-edit "$RELEASE_TAG"
 
+          AUTH_HEADER="AUTHORIZATION: bearer $GITHUB_TOKEN"
+
           echo "Push updated main..."
           git -c http.extraheader="$AUTH_HEADER" push origin main
 
           echo "Sync release tag $RELEASE_TAG..."
-          AUTH_HEADER="AUTHORIZATION: bearer $GITHUB_TOKEN"
           REMOTE_TAG_COMMIT=$(git -c http.extraheader="$AUTH_HEADER" ls-remote origin "refs/tags/$RELEASE_TAG^{}" | awk 'NR==1 {print $1}')
 
           if [ -z "$REMOTE_TAG_COMMIT" ]; then
