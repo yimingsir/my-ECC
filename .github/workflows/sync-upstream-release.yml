@@ -75,4 +75,17 @@ jobs:
           echo "Push updated main..."
           git push origin main
 
+          echo "Sync release tag $RELEASE_TAG..."
+          REMOTE_TAG_COMMIT=$(git ls-remote origin "refs/tags/$RELEASE_TAG^{}" | awk 'NR==1 {print $1}')
+
+          if [ -z "$REMOTE_TAG_COMMIT" ]; then
+            git push origin "refs/tags/$RELEASE_TAG"
+            echo "Created tag $RELEASE_TAG on fork."
+          elif [ "$REMOTE_TAG_COMMIT" = "$UPSTREAM_COMMIT" ]; then
+            echo "Tag $RELEASE_TAG already exists on fork and points to the correct commit."
+          else
+            echo "ERROR: Tag $RELEASE_TAG already exists on fork but points to a different commit."
+            exit 1
+          fi
+
           echo "Successfully synced $RELEASE_TAG"
