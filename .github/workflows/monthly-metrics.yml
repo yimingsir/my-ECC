@@ -1,8 +1,4 @@
-name: Monthly Metrics Snapshot
-
 on:
-  schedule:
-    - cron: '0 14 1 * *' # Monthly on the 1st at 14:00 UTC
   workflow_dispatch:
 
 permissions:
