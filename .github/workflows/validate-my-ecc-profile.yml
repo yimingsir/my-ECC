@@ -29,6 +29,9 @@ jobs:
       - name: Validate curated profile
         run: node scripts/apply-my-ecc-profile.mjs --check
 
+      - name: Validate curated rules
+        run: node scripts/install-my-ecc-rules.mjs --check
+
       - name: Validate hook schema
         run: node scripts/ci/validate-hooks.js
 
