@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "name": "my-ecc",
+  "profile_version": 1,
+  "description": "Curated ECC profile for Go/Python/Vue/PostgreSQL/MySQL/Redis projects, designed to complement Superpowers.",
+  "hook_profile": "standard",
+  "hooks_enabled": true,
+  "skills": [
+    "api-design",
+    "database-migrations",
+    "django-patterns",
+    "django-security",
+    "django-tdd",
+    "django-verification",
+    "django-celery",
+    "docker-patterns",
+    "e2e-testing",
+    "fastapi-patterns",
+    "golang-patterns",
+    "golang-testing",
+    "mysql-patterns",
+    "postgres-patterns",
+    "redis-patterns",
+    "python-patterns",
+    "python-testing",
+    "search-first",
+    "security-review",
+    "documentation-lookup",
+    "vue-patterns"
+  ],
+  "agents": [
+    "architect",
+    "build-error-resolver",
+    "code-reviewer",
+    "database-reviewer",
+    "django-build-resolver",
+    "django-reviewer",
+    "e2e-runner",
+    "fastapi-reviewer",
+    "go-build-resolver",
+    "go-reviewer",
+    "python-reviewer",
+    "refactor-cleaner",
+    "security-reviewer",
+    "vue-reviewer"
+  ],
+  "commands": [
+    "build-fix",
+    "code-review",
+    "ecc-guide",
+    "fastapi-review",
+    "go-build",
+    "go-review",
+    "go-test",
+    "python-review",
+    "quality-gate",
+    "refactor-clean",
+    "review-pr",
+    "security-scan",
+    "test-coverage",
+    "update-docs",
+    "vue-review"
+  ],
+  "optional_next_stage": [
+    "continuous-learning-v2",
+    "skill-stocktake",
+    "strategic-compact"
+  ],
+  "excluded_as_redundant": [
+    "coding-standards"
+  ]
+}

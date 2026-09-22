@@ -1,47 +1,120 @@
 {
-  "name": "ecc",
+  "name": "my-ecc",
   "owner": {
-    "name": "Affaan Mustafa",
-    "email": "me@affaanmustafa.com"
+    "name": "yimingsir",
+    "url": "https://github.com/yimingsir"
   },
   "metadata": {
-    "description": "Harness-native ECC skills, hooks, rules, MCP conventions, and operator workflows"
+    "description": "Curated ECC profile for yimingsir's Superpowers-first Claude Code workflow."
   },
   "plugins": [
     {
-      "name": "ecc",
+      "name": "my-ecc",
       "source": "./",
-      "description": "Harness-native ECC operator layer - 68 agents, 292 skills, 94 legacy command shims, reusable hooks, rules, selective install profiles, and production-ready workflows for Claude Code, Codex, OpenCode, Cursor, and related agent harnesses",
-      "version": "2.2.2",
+      "description": "Curated ECC profile for Go/Python/Vue/PostgreSQL/MySQL/Redis projects, designed to complement Superpowers.",
+      "version": "2.2.2-my.1",
       "author": {
-        "name": "Affaan Mustafa",
-        "email": "me@affaanmustafa.com"
+        "name": "yimingsir",
+        "url": "https://github.com/yimingsir"
       },
-      "homepage": "https://ecc.tools",
-      "repository": "https://github.com/affaan-m/ECC",
+      "homepage": "https://github.com/yimingsir/my-ECC",
+      "repository": "https://github.com/yimingsir/my-ECC",
       "license": "MIT",
       "keywords": [
-        "agents",
-        "skills",
-        "hooks",
-        "commands",
-        "tdd",
-        "code-review",
-        "security",
-        "best-practices"
+        "claude-code",
+        "ecc",
+        "superpowers",
+        "go",
+        "python",
+        "django",
+        "fastapi",
+        "vue",
+        "postgresql",
+        "mysql",
+        "redis"
       ],
       "category": "workflow",
       "tags": [
-        "agents",
-        "skills",
-        "hooks",
-        "commands",
-        "tdd",
-        "code-review",
-        "security",
-        "best-practices"
+        "curated",
+        "engineering",
+        "go",
+        "python",
+        "vue",
+        "database",
+        "security"
       ],
-      "strict": false
+      "strict": false,
+      "userConfig": {
+        "hooks_enabled": {
+          "type": "boolean",
+          "title": "Enable my-ECC hooks",
+          "description": "Enable ECC lifecycle, quality, and safety hooks.",
+          "default": true
+        },
+        "hook_profile": {
+          "type": "string",
+          "title": "my-ECC hook profile",
+          "description": "Choose minimal, standard, or strict.",
+          "default": "standard"
+        }
+      },
+      "skills": [
+        "./skills/api-design",
+        "./skills/database-migrations",
+        "./skills/django-patterns",
+        "./skills/django-security",
+        "./skills/django-tdd",
+        "./skills/django-verification",
+        "./skills/django-celery",
+        "./skills/docker-patterns",
+        "./skills/e2e-testing",
+        "./skills/fastapi-patterns",
+        "./skills/golang-patterns",
+        "./skills/golang-testing",
+        "./skills/mysql-patterns",
+        "./skills/postgres-patterns",
+        "./skills/redis-patterns",
+        "./skills/python-patterns",
+        "./skills/python-testing",
+        "./skills/search-first",
+        "./skills/security-review",
+        "./skills/documentation-lookup",
+        "./skills/vue-patterns"
+      ],
+      "agents": [
+        "./agents/architect.md",
+        "./agents/build-error-resolver.md",
+        "./agents/code-reviewer.md",
+        "./agents/database-reviewer.md",
+        "./agents/django-build-resolver.md",
+        "./agents/django-reviewer.md",
+        "./agents/e2e-runner.md",
+        "./agents/fastapi-reviewer.md",
+        "./agents/go-build-resolver.md",
+        "./agents/go-reviewer.md",
+        "./agents/python-reviewer.md",
+        "./agents/refactor-cleaner.md",
+        "./agents/security-reviewer.md",
+        "./agents/vue-reviewer.md"
+      ],
+      "commands": [
+        "./commands/build-fix.md",
+        "./commands/code-review.md",
+        "./commands/ecc-guide.md",
+        "./commands/fastapi-review.md",
+        "./commands/go-build.md",
+        "./commands/go-review.md",
+        "./commands/go-test.md",
+        "./commands/python-review.md",
+        "./commands/quality-gate.md",
+        "./commands/refactor-clean.md",
+        "./commands/review-pr.md",
+        "./commands/security-scan.md",
+        "./commands/test-coverage.md",
+        "./commands/update-docs.md",
+        "./commands/vue-review.md"
+      ],
+      "hooks": "./hooks/hooks.json"
     }
   ]
-}
+}\n

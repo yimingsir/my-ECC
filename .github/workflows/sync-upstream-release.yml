@@ -96,7 +96,29 @@ jobs:
 
           echo "New upstream release detected. Merging $RELEASE_TAG..."
 
-          git merge --no-edit "$RELEASE_TAG"
+          if ! git merge --no-edit "$RELEASE_TAG"; then
+            echo "Merge reported conflicts. Inspecting unresolved paths..."
+
+            CONFLICTS=$(git diff --name-only --diff-filter=U)
+            if [ "$CONFLICTS" = ".claude-plugin/marketplace.json" ]; then
+              echo "Resolving expected my-ECC overlay conflict by taking upstream marketplace..."
+              git checkout --theirs .claude-plugin/marketplace.json
+              git add .claude-plugin/marketplace.json
+              git commit --no-edit
+            else
+              echo "Unexpected merge conflicts:"
+              printf '%s\n' "$CONFLICTS"
+              exit 1
+            fi
+          fi
+
+          echo "Re-applying my-ECC curated profile..."
+          node scripts/apply-my-ecc-profile.mjs
+
+          if ! git diff --quiet -- .claude-plugin/marketplace.json; then
+            git add .claude-plugin/marketplace.json
+            git commit -m "chore: refresh my-ECC curated profile for $RELEASE_TAG"
+          fi
 
           AUTH_HEADER="AUTHORIZATION: bearer $GITHUB_TOKEN"
 
