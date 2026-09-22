@@ -1,9 +1,5 @@
-name: Release Announce
-
 on:
-  workflow_run:
-    workflows: [Release]
-    types: [completed]
+  workflow_dispatch:
 
 permissions:
   contents: read
