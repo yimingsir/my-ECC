@@ -35,7 +35,7 @@ Superpowers owns the main development workflow. my-ECC supplies selected ECC ski
 
 `config/my-ecc-profile.json` is the only file you edit to change the curated component set.
 
-`scripts/apply-my-ecc-profile.mjs` generates the plugin manifest, marketplace entry, and managed hook configuration.
+`scripts/apply-my-ecc-profile.mjs` generates the plugin manifest, marketplace entry, managed hook configuration, and curated MCP overlay.
 
 `plugin.json` is the component authority. Claude Code 2.1+ auto-loads `hooks/hooks.json` from an installed plugin, so the plugin manifest intentionally does **not** declare a `hooks` field.
 
@@ -57,6 +57,16 @@ The default profile is intentionally focused on your current stack and Superpowe
 - `deployment-patterns` — covers CI/CD, rollout strategy, health checks, and rollback patterns.
 
 These are additive engineering capabilities; they do not replace Superpowers' primary workflow.
+
+## MCP overlay
+
+The repository keeps a curated Chrome DevTools MCP configuration for the target Linux/root runtime:
+
+- headless browser execution
+- isolated browser profile
+- `--no-sandbox` passed to Chrome because the runtime may execute as root
+
+The overlay is applied to `.mcp.json` while preserving other upstream MCP server entries. It is re-applied after every upstream release merge, so upstream changes do not silently remove the runtime-specific Chrome DevTools settings.
 
 ## Hook overlay
 
@@ -119,7 +129,7 @@ They remain upstream-visible and can be promoted into the profile later without 
 
 ## Automatic upstream updates
 
-The sync workflow merges the latest ECC release, resolves only expected conflicts in `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`, re-applies the profile, and pushes the result.
+The sync workflow merges the latest ECC release, resolves expected overlay conflicts in `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, and `.mcp.json`, re-applies the profile, and pushes the result.
 
 Unexpected conflicts fail the workflow instead of silently overwriting custom changes.
 
