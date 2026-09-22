@@ -39,15 +39,9 @@ jobs:
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
       - name: Configure git
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          # checkout uses persist-credentials: false, so configure an
-          # authenticated remote only for the commands that need to push.
-          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
 
       - name: Fetch upstream
         run: |
@@ -81,13 +75,14 @@ jobs:
           git merge --no-edit "$RELEASE_TAG"
 
           echo "Push updated main..."
-          git push origin main
+          git -c http.extraheader="$AUTH_HEADER" push origin main
 
           echo "Sync release tag $RELEASE_TAG..."
-          REMOTE_TAG_COMMIT=$(git ls-remote origin "refs/tags/$RELEASE_TAG^{}" | awk 'NR==1 {print $1}')
+          AUTH_HEADER="AUTHORIZATION: bearer $GITHUB_TOKEN"
+          REMOTE_TAG_COMMIT=$(git -c http.extraheader="$AUTH_HEADER" ls-remote origin "refs/tags/$RELEASE_TAG^{}" | awk 'NR==1 {print $1}')
 
           if [ -z "$REMOTE_TAG_COMMIT" ]; then
-            git push origin "refs/tags/$RELEASE_TAG"
+            git -c http.extraheader="$AUTH_HEADER" push origin "refs/tags/$RELEASE_TAG"
             echo "Created tag $RELEASE_TAG on fork."
           elif [ "$REMOTE_TAG_COMMIT" = "$UPSTREAM_COMMIT" ]; then
             echo "Tag $RELEASE_TAG already exists on fork and points to the correct commit."
