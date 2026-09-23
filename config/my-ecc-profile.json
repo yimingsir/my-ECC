@@ -6,7 +6,6 @@
   "hook_profile": "standard",
   "hooks_enabled": true,
   "disabled_hooks": [
-    "post:quality-gate",
     "stop:format-typecheck"
   ],
   "skills": [
