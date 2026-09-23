@@ -3,7 +3,6 @@
     "enabled": true,
     "profile": "standard",
     "disabled": [
-      "post:quality-gate",
       "stop:format-typecheck"
     ]
   }
