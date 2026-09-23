@@ -65,6 +65,7 @@ jobs:
       - name: Merge upstream release
         env:
           RELEASE_TAG: ${{ steps.upstream.outputs.tag }}
+          WORKFLOW_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
         run: |
           set -euo pipefail
           git checkout main
@@ -117,7 +118,14 @@ jobs:
           echo "Sync release tag $RELEASE_TAG..."
           REMOTE_TAG_COMMIT=$(git ls-remote origin "refs/tags/$RELEASE_TAG^{}" | awk 'NR==1 {print $1}')
           if [ -z "$REMOTE_TAG_COMMIT" ]; then
-            git push origin "refs/tags/$RELEASE_TAG"
+            if [ -z "${WORKFLOW_TOKEN:-}" ]; then
+              echo "ERROR: WORKFLOW_TOKEN is required to create/update release tags that reference commits containing .github/workflows/*."
+              echo "Create a fine-grained PAT with Contents: Read and write + Workflows: Read and write for this repository, then save it as the WORKFLOW_TOKEN Actions secret."
+              exit 1
+            fi
+
+            AUTH_HEADER="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$WORKFLOW_TOKEN" | base64 -w0)"
+            git -c http.extraheader="$AUTH_HEADER" push origin "refs/tags/$RELEASE_TAG"
             echo "Created tag $RELEASE_TAG on fork."
           elif [ "$REMOTE_TAG_COMMIT" = "$UPSTREAM_COMMIT" ]; then
             echo "Tag $RELEASE_TAG already exists on fork and points to the correct commit."
