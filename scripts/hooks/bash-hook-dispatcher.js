@@ -44,11 +44,6 @@ const PRE_BASH_HOOKS = [
     profiles: 'strict',
     run: rawInput => runCommitQuality(rawInput),
   },
-  {
-    id: 'pre:bash:gateguard-fact-force',
-    profiles: 'standard,strict',
-    run: rawInput => runGateGuard(rawInput),
-  },
 ];
 
 const POST_BASH_HOOKS = [
