@@ -12,6 +12,40 @@ const VERSION = path.join(ROOT, 'VERSION');
 const MCP_CONFIG = path.join(ROOT, '.mcp.json');
 const CHECK = process.argv.includes('--check');
 
+const DISPATCHER_HOOK_GLOBS = [
+  path.join(ROOT, 'scripts', 'hooks'),
+];
+
+const INTERNAL_HOOK_ID_PATTERNS = [
+  /\\bid\\s*:\\s*['\"]((?:pre|post|stop|session(?:-start|-end)?):[^'\"]+)['\"]/g,
+  /\\b[A-Z0-9_]*HOOK_ID\\s*=\\s*['\"]((?:pre|post|stop|session(?:-start|-end)?):[^'\"]+)['\"]/g,
+];
+
+const listJavaScriptFiles = (dir) => {
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir, { withFileTypes: true })
+    .flatMap((entry) => {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) return listJavaScriptFiles(fullPath);
+      return entry.isFile() && entry.name.endsWith('.js') ? [fullPath] : [];
+    });
+};
+
+const discoverInternalHookIds = () => {
+  const ids = new Set();
+  for (const dir of DISPATCHER_HOOK_GLOBS) {
+    for (const file of listJavaScriptFiles(dir)) {
+      const source = fs.readFileSync(file, 'utf8');
+      for (const pattern of INTERNAL_HOOK_ID_PATTERNS) {
+        pattern.lastIndex = 0;
+        let match;
+        while ((match = pattern.exec(source))) ids.add(match[1]);
+      }
+    }
+  }
+  return ids;
+};
+
 const CURATED_MCP_SERVERS = {
   'chrome-devtools': {
     command: 'npx',
@@ -69,8 +103,17 @@ const hookIds = new Set(
     .map(entry => entry.id)
     .filter(Boolean)
 );
-for (const hookId of profile.disabled_hooks) {
-  if (!hookIds.has(hookId)) fail('Profile disabled_hooks references unknown ECC hook: ' + hookId);
+
+const internalHookIds = discoverInternalHookIds();
+for (const hookId of internalHookIds) hookIds.add(hookId);
+
+const unknownDisabledHooks = profile.disabled_hooks.filter((hookId) => !hookIds.has(hookId));
+if (unknownDisabledHooks.length > 0) {
+  fail(
+    'Profile disabled_hooks references unknown ECC hook(s): ' +
+    unknownDisabledHooks.join(', ') +
+    '. Checked hooks.metadata.json and hook implementation registries under scripts/hooks/.'
+  );
 }
 
 const pluginVersion = eccVersion + '-my.' + profile.profile_version;
