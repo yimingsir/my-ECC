@@ -43,7 +43,7 @@ Superpowers owns the main development workflow. my-ECC supplies selected ECC ski
 
 The default profile is intentionally focused on your current stack and Superpowers-first workflow.
 
-### Added in profile v3
+### Added in profile v4
 
 **Agents**
 - `silent-failure-hunter` — finds swallowed errors, dangerous fallbacks, missing error propagation, and failure paths that look successful.
