@@ -46,8 +46,18 @@ jobs:
         run: |
           set -euo pipefail
           for workflow in ci.yml discussion-announce.yml generator-generic-ossf-slsa3-publish.yml maintenance.yml monthly-metrics.yml release-announce.yml release.yml supply-chain-watch.yml taste-skills.yml; do
-            echo "Disabling $workflow..."
-            gh api --method PUT "repos/${GITHUB_REPOSITORY}/actions/workflows/${workflow}/disable"
+            echo "Checking $workflow..."
+            if ! state=$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/${workflow}" --jq '.state'); then
+              echo "Workflow $workflow is unavailable in the fork; skipping."
+              continue
+            fi
+
+            if [ "$state" = "active" ]; then
+              echo "Disabling $workflow..."
+              gh api --method PUT "repos/${GITHUB_REPOSITORY}/actions/workflows/${workflow}/disable" >/dev/null
+            else
+              echo "$workflow is already disabled (state=$state)."
+            fi
           done
 
       - name: Fetch upstream
