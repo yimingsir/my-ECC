@@ -17,8 +17,8 @@ const DISPATCHER_HOOK_GLOBS = [
 ];
 
 const INTERNAL_HOOK_ID_PATTERNS = [
-  /\\bid\\s*:\\s*['\"]((?:pre|post|stop|session(?:-start|-end)?):[^'\"]+)['\"]/g,
-  /\\b[A-Z0-9_]*HOOK_ID\\s*=\\s*['\"]((?:pre|post|stop|session(?:-start|-end)?):[^'\"]+)['\"]/g,
+  /\bid\s*:\s*['"]((?:pre|post|stop|session(?:-start|-end)?):[^'"]+)['"]/g,
+  /\b[A-Z0-9_]*HOOK_ID\s*=\s*['"]((?:pre|post|stop|session(?:-start|-end)?):[^'"]+)['"]/g,
 ];
 
 const listJavaScriptFiles = (dir) => {
