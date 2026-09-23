@@ -70,14 +70,18 @@ The overlay is applied to `.mcp.json` while preserving other upstream MCP server
 
 ## Hook overlay
 
-The hook profile is `standard`, with two ECC hooks disabled because your project-level hooks already own the corresponding responsibilities:
+The hook profile is `standard`. The curated profile disables only hooks that overlap with responsibilities already owned by Superpowers or your local Claude Code hooks:
 
+- `pre:edit-write:gateguard-fact-force` — disabled because Superpowers owns the primary development workflow and already drives repository understanding before edits; keeping a blocking first-touch Edit/Write gate caused redundant denial/retry loops.
+- `session:start` — disabled so Superpowers remains the primary `SessionStart` context owner; ECC lifecycle/telemetry hooks remain available without competing with Superpowers' session bootstrap.
 - `post:quality-gate` — disabled to avoid duplicate per-edit quality checks alongside your `format-on-edit.py`.
-- `stop:format-typecheck` — disabled to avoid a Stop-hook race with your `verify-on-stop.py`, which is the authoritative final quality gate.
+- `post:edit:accumulator` — disabled because it primarily feeds ECC's `stop:format-typecheck`, which is also disabled in this profile.
+- `post:edit:design-quality-check` — disabled because frontend design guidance is better handled by your `frontend-design`, Vue-specific skills, and repository conventions than by a heuristic warning on every edit.
+- `stop:format-typecheck` — disabled because your `verify-on-stop.py` is the authoritative final changed-scope verification hook.
 
-The following ECC safety/context hooks remain enabled, including Bash preflight, config protection, session lifecycle, governance, context monitoring, and skill tracking.
+The following ECC safety/context hooks remain enabled, including Bash preflight, Bash/PowerShell destructive-command GateGuard, config protection, MCP health checks, console-log auditing, session persistence, governance, context monitoring, and skill tracking.
 
-The disabled hook IDs are validated against `hooks/hooks.metadata.json` on every profile generation. This makes an upstream hook rename/removal fail the sync workflow instead of silently changing your policy.
+Disabled hook IDs are validated against both `hooks/hooks.metadata.json` and Hook IDs registered inside ECC hook dispatcher implementations under `scripts/hooks/`. This keeps curated overrides explicit while allowing internal dispatcher hooks such as `post:quality-gate` to be controlled without hardcoding the upstream version.
 
 ## Rules
 
