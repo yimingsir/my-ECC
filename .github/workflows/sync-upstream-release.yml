@@ -124,11 +124,11 @@ jobs:
               exit 1
             fi
 
-            # actions/checkout@v4 installs the GITHUB_TOKEN as an http.extraheader.
-            # A second extraheader does not reliably override it, so use an explicit
-            # PAT-authenticated URL for this workflow-sensitive tag push.
+            # actions/checkout@v4 stores GITHUB_TOKEN under the URL-specific
+            # http.https://github.com/.extraheader key. Clear that exact key
+            # so the PAT-authenticated URL is the only credential used here.
             TAG_REMOTE="https://x-access-token:${WORKFLOW_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-            git -c http.extraheader= push "$TAG_REMOTE" "refs/tags/$RELEASE_TAG"
+            git -c http.https://github.com/.extraheader= push "$TAG_REMOTE" "refs/tags/$RELEASE_TAG"
             echo "Created tag $RELEASE_TAG on fork."
           elif [ "$REMOTE_TAG_COMMIT" = "$UPSTREAM_COMMIT" ]; then
             echo "Tag $RELEASE_TAG already exists on fork and points to the correct commit."
