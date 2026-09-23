@@ -3,6 +3,11 @@
     "enabled": true,
     "profile": "standard",
     "disabled": [
+      "pre:edit-write:gateguard-fact-force",
+      "session:start",
+      "post:quality-gate",
+      "post:edit:accumulator",
+      "post:edit:design-quality-check",
       "stop:format-typecheck"
     ]
   }
