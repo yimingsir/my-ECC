@@ -3,6 +3,8 @@
 > **Purpose:** This is the canonical maintenance document for `yimingsir/my-ECC`, a curated fork of `affaan-m/ECC` designed to complement a Superpowers-first Claude Code workflow.
 >
 > **Rule:** When this document conflicts with the repository's executable code or configuration, the code/configuration is authoritative and this document must be corrected.
+>
+> **Documentation rule:** **Whenever a customization, configuration, Hook policy, generator, CI workflow, upstream-sync behavior, or other repository maintenance rule is changed, update this document in the same change (or immediately afterward) so it remains an accurate maintenance contract.** Do not knowingly leave this document stale.
 
 ## 1. Architecture and ownership
 
@@ -119,7 +121,8 @@ A local change to an upstream-owned implementation is acceptable only when the b
 2. Check how `sync-upstream-release.yml` will handle that path.
 3. Add or update CI coverage.
 4. Document the divergence and its expected maintenance cost.
-5. Verify an upstream release sync before considering the change complete.
+5. Update this document in the same change to record the new maintenance rule or divergence.
+6. Verify an upstream release sync before considering the change complete.
 
 Do not edit upstream Hook registries merely to disable local behavior.
 
@@ -148,6 +151,7 @@ Do not switch from `standard` to `minimal` merely because the current effective 
 3. Check for newly added upstream Hooks.
 4. Confirm the protections you intend to retain are still active.
 5. Run the generator and relevant tests/CI.
+6. Update this document if the resulting policy or maintenance procedure changes.
 
 The repository code is authoritative if the documented policy and actual Hook behavior differ.
 
@@ -241,6 +245,8 @@ This workflow is the reason local customization should live in the profile/overl
 
 ## 9. Required workflow for future changes
 
+**Every customization change must include a documentation review. If the change affects behavior, file ownership, generated outputs, Hook policy, CI, upstream synchronization, versioning, or the maintenance procedure, update this document before the change is considered complete.**
+
 ### A. Changing Skills / Agents / Commands
 
 1. Edit `config/my-ecc-profile.json`.
@@ -253,8 +259,9 @@ node scripts/apply-my-ecc-profile.mjs --check
 ```
 
 4. Inspect `git diff` for unintended generated or upstream changes.
-5. Commit/push the source profile and generated artifacts, or push the profile and let `sync-my-ecc-profile.yml` generate them.
-6. Confirm CI passes.
+5. Update this document if the supported component set or maintenance procedure changed.
+6. Commit/push the source profile and generated artifacts, or push the profile and let `sync-my-ecc-profile.yml` generate them.
+7. Confirm CI passes.
 
 ### B. Changing Hooks
 
@@ -264,6 +271,7 @@ node scripts/apply-my-ecc-profile.mjs --check
 4. Run the generator and `--check`.
 5. Run the relevant Hook tests/CI.
 6. Inspect the effective Hook set after the change.
+7. Update this document whenever the Hook policy, rationale, or maintenance process changes.
 
 Never remove Hook entries from upstream Hook registries merely to disable them locally.
 
@@ -276,7 +284,8 @@ When the curated profile semantics change materially:
 3. Run `--check`.
 4. Confirm `.claude-plugin/plugin.json` has the matching `<ECC VERSION>-my.<profile_version>` value.
 5. Inspect the generated diff.
-6. Push and verify CI.
+6. Update this document if the versioning policy or profile maintenance rule changed.
+7. Push and verify CI.
 
 Never manually change only the generated plugin version.
 
@@ -293,6 +302,8 @@ node scripts/apply-my-ecc-profile.mjs --check
 
 Then inspect every generated file. A pushed generator change also triggers `sync-my-ecc-profile.yml`.
 
+If generator behavior or generated-file ownership changes, update this document in the same change.
+
 ### E. Changing upstream-sync CI
 
 Before modifying `.github/workflows/sync-upstream-release.yml`:
@@ -302,7 +313,8 @@ Before modifying `.github/workflows/sync-upstream-release.yml`:
 3. Keep generated overlay regeneration after the merge.
 4. Preserve release-tag handling.
 5. Test both new-release and already-synced/drift-repair paths when practical.
-6. Confirm the change does not cause the profile or generated artifacts to be lost on the next upstream release.
+6. Update this document with any changed CI contract or maintenance procedure.
+7. Confirm the change does not cause the profile or generated artifacts to be lost on the next upstream release.
 
 ### F. Changing custom profile CI
 
@@ -313,6 +325,7 @@ Before modifying `.github/workflows/sync-my-ecc-profile.yml`:
 3. Keep generated paths out of the workflow trigger paths unless there is a deliberate reason to change the trigger design.
 4. Ensure `--check` remains part of the workflow.
 5. Ensure the bot commit contains only expected generated changes.
+6. Update this document if the CI contract or maintenance procedure changes.
 
 ## 10. What not to do
 
@@ -327,6 +340,7 @@ Do not:
 - Add CI that independently rewrites generated files when the generator can do it.
 - Make a local customization that upstream sync will silently overwrite.
 - Assume profile CI alone proves that upstream release sync is safe.
+- Leave this document stale after changing the customization or maintenance contract.
 
 ## 11. CI acceptance checklist
 
@@ -340,6 +354,7 @@ Before considering a customization complete:
 [ ] No unintended upstream-owned files changed
 [ ] Disabled Hook IDs are valid
 [ ] Skills/Agents/Commands referenced by the profile exist
+[ ] Documentation was reviewed and updated when behavior or maintenance rules changed
 [ ] Profile Sync CI passes
 [ ] Relevant validation/tests pass
 [ ] If upstream-related, Sync ECC upstream release still passes
@@ -350,7 +365,7 @@ Before considering a customization complete:
 
 The core rule for this fork is:
 
-> **Keep upstream code upstream. Keep local policy in the profile. Keep derived state generated. Keep synchronization automated.**
+> **Keep upstream code upstream. Keep local policy in the profile. Keep derived state generated. Keep synchronization automated. Keep this document synchronized with the implementation.**
 
 When a future change is proposed, ask:
 
