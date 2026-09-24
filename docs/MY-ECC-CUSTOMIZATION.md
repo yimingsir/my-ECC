@@ -86,6 +86,8 @@ The generator computes the plugin version as:
 <ECC VERSION>-my.<profile_version>
 ```
 
+For upstream synchronization, **my-ECC follows upstream ECC release tags, not the upstream `main` branch**. The root `VERSION` is expected to match the upstream release tag currently synchronized into the fork. If upstream `main` has already advanced to a future version before that version is released, do not advance or preserve the fork's `VERSION` solely because of the upstream `main` state; release-tag synchronization is the source for the version baseline.
+
 For example, ECC `2.2.2` with profile version `5` produces `2.2.2-my.5`.
 
 Therefore:
