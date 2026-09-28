@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "my-ecc",
-  "profile_version": 5,
+  "profile_version": 6,
   "description": "Curated ECC profile for Go/Python/Vue/PostgreSQL/MySQL/Redis projects, designed to complement Superpowers.",
   "hook_profile": "standard",
   "hooks_enabled": true,
@@ -14,7 +14,6 @@
     "pre:bash:gateguard-fact-force",
     "pre:powershell:gateguard-fact-force",
     "pre:write:doc-file-warning",
-    "pre:edit-write:suggest-compact",
     "pre:observe:continuous-learning",
     "pre:governance-capture",
     "pre:mcp-health-check",
@@ -52,19 +51,19 @@
     "redis-patterns",
     "python-patterns",
     "python-testing",
-    "search-first",
     "security-review",
     "documentation-lookup",
     "contract-first",
-    "ai-regression-testing",
     "production-audit",
     "deployment-patterns",
-    "vue-patterns"
+    "vue-patterns",
+    "frontend-design-direction",
+    "codebase-onboarding",
+    "skill-stocktake",
+    "strategic-compact"
   ],
   "agents": [
-    "architect",
     "build-error-resolver",
-    "code-reviewer",
     "database-reviewer",
     "django-build-resolver",
     "django-reviewer",
@@ -75,13 +74,14 @@
     "pr-test-analyzer",
     "python-reviewer",
     "silent-failure-hunter",
-    "refactor-cleaner",
     "security-reviewer",
-    "vue-reviewer"
+    "vue-reviewer",
+    "a11y-architect",
+    "performance-optimizer",
+    "type-design-analyzer"
   ],
   "commands": [
     "build-fix",
-    "code-review",
     "ecc-guide",
     "fastapi-review",
     "go-build",
@@ -89,7 +89,6 @@
     "go-test",
     "python-review",
     "quality-gate",
-    "refactor-clean",
     "review-pr",
     "security-scan",
     "test-coverage",
@@ -98,15 +97,9 @@
   ],
   "optional_next_stage": [
     "continuous-learning-v2",
-    "skill-stocktake",
-    "strategic-compact",
-    "frontend-design-direction",
     "living-docs-governance",
-    "codebase-onboarding",
     "harness-optimizer",
-    "type-design-analyzer",
-    "performance-optimizer",
-    "a11y-architect"
+    "ai-regression-testing"
   ],
   "excluded_as_redundant": [
     "coding-standards",
