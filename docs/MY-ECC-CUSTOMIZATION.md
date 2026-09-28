@@ -38,12 +38,20 @@ config/my-ecc-profile.json
 Current profile state is defined by that file. At the time this document was last synchronized, it uses:
 
 ```text
-profile_version: 5
+profile_version: 6
 hook_profile: standard
 hooks_enabled: true
 ```
 
 The profile selects the curated Skills, Agents, and Commands and contains the explicit `disabled_hooks` policy. The exact lists in `config/my-ecc-profile.json` are authoritative; do not duplicate them manually in documentation.
+
+The current curation follows these boundaries:
+
+- Superpowers remains the workflow owner.
+- ECC workflow-heavy components that duplicate Superpowers are excluded from the global profile.
+- Stack/domain knowledge, specialist reviewers, build/test resolvers, security, accessibility, performance, type-design, and explicit utility commands remain available.
+- `strategic-compact` is enabled as ECC runtime/context guidance; it does not own task workflow.
+- `continuous-learning-v2`, `living-docs-governance`, `harness-optimizer`, and `ai-regression-testing` remain deferred rather than globally enabled.
 
 The generator is:
 
@@ -90,7 +98,7 @@ The generator computes the plugin version as:
 
 If upstream `main` has already advanced to a future version before that version is released, do not use that future `main` version as the my-ECC version baseline. Release-tag synchronization is authoritative.
 
-`profile_version` is an independent local customization revision. It is **not reset to `0` when upstream releases a new version**. For example:
+`profile_version` is an independent local customization revision. It is **not reset to `0` when upstream releases a new ECC version**. For example:
 
 ```text
 upstream release 2.2.1 + profile 5 → 2.2.1-my.5
@@ -147,9 +155,18 @@ hooks_enabled: true
 + explicit disabled_hooks
 ```
 
-The exact `disabled_hooks` list is maintained only in `config/my-ecc-profile.json`. At present it disables Bash verification/GateGuard/reminder/tmux/commit-quality automation, several Edit/Write and governance/learning/MCP checks, dispatcher/skill tracking, Plan Canvas session behavior, and several Stop/SessionEnd automation hooks.
+The exact `disabled_hooks` list is maintained only in `config/my-ecc-profile.json`. The local policy deliberately disables broad Bash verification/GateGuard/reminder/tmux/commit-quality automation, governance/learning/MCP checks, dispatcher/skill tracking, Plan Canvas session behavior, and several Stop/SessionEnd automation hooks.
 
-The retained set is intentionally small and focused on basic lifecycle/config protection rather than broad command interception. Do not infer the effective Hook set from this document alone; inspect the current profile and Hook implementation/metadata when changing it.
+The strategic context hook `pre:edit-write:suggest-compact` is intentionally **enabled** in the current profile. It was removed from `disabled_hooks` because `strategic-compact` provides context-window-aware, advisory compaction suggestions rather than forced workflow behavior.
+
+Do not add a second custom context-monitor or auto-compaction hook. The intended responsibility split is:
+
+- Claude Code runtime → actual context window and native compaction.
+- ECC `strategic-compact` → detects context pressure and suggests a logical `/compact` boundary.
+- ECC PreCompact lifecycle → preserves state needed across compaction.
+- Superpowers → task workflow.
+
+The retained Hook set is intentionally small and focused on basic lifecycle/config protection plus the strategic compaction signal. Do not infer the effective Hook set from this document alone; inspect the current profile and Hook implementation/metadata when changing it.
 
 ### Standard vs minimal
 
@@ -181,6 +198,27 @@ Environment variables override the corresponding managed settings from `ecc/setu
 ## 6. Skills, Agents, Commands and Rules
 
 The profile is intentionally focused on the project's Go/Python/Vue/database stack and is designed to complement, not replace, Superpowers.
+
+The active profile deliberately includes:
+
+- **Skills:** stack/domain patterns plus `frontend-design-direction`, `codebase-onboarding`, `skill-stocktake`, and `strategic-compact`.
+- **Agents:** stack-specific build/review agents plus `a11y-architect`, `performance-optimizer`, and `type-design-analyzer`.
+- **Commands:** explicit build/test/review/security/quality utilities that do not establish a competing primary workflow.
+
+The following were intentionally removed from the global profile because their behavior overlaps with Superpowers or is poorly aligned with the curated stack:
+
+- Skill: `search-first` — its own research-before-coding workflow is better treated as part of Superpowers routing/research when applicable.
+- Skill: `ai-regression-testing` — useful technique, but its current implementation is strongly oriented around Next.js/Vitest/Supabase-style examples and is better applied project-locally when needed.
+- Agents: `architect`, `code-reviewer`, `refactor-cleaner` — they impose overlapping workflow/review/refactoring behavior or stack assumptions that are not appropriate as global defaults.
+- Commands: `code-review`, `refactor-clean` — their behavior duplicates the specialist review/workflow layers and is not retained as a global command.
+
+The following remain deferred rather than globally enabled:
+
+- `continuous-learning-v2` — introduces adaptive behavior/state that is intentionally kept out of the reproducible global baseline.
+- `living-docs-governance` — useful for large documentation-heavy projects but adds governance ceremony beyond the default workflow.
+- `harness-optimizer` — intentionally excluded while the Claude Code harness itself is being curated, to avoid a second self-optimization control loop.
+
+`test-coverage` and `quality-gate` remain as explicit commands because they are operator-invoked utilities rather than primary workflow owners.
 
 Profile-managed components are declared in:
 
@@ -371,6 +409,7 @@ Do not:
 - Assume profile CI alone proves that upstream release sync is safe.
 - Assume an upstream `main` VERSION is the release baseline when it is ahead of the latest release tag.
 - Leave this document stale after changing the customization or maintenance contract.
+- Add a second context-monitor/auto-compaction Hook when `strategic-compact` is enabled.
 
 ## 11. CI acceptance checklist
 
@@ -389,6 +428,7 @@ Before considering a customization complete:
 [ ] Relevant validation/tests pass
 [ ] If upstream-related, Sync ECC upstream release still passes
 [ ] If Hooks changed, the effective Hook set was reviewed
+[ ] If strategic-compact is enabled, no duplicate custom context-monitor/auto-compact Hook exists
 ```
 
 ## 12. Maintenance principle
