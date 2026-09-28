@@ -86,15 +86,24 @@ The generator computes the plugin version as:
 <ECC VERSION>-my.<profile_version>
 ```
 
-For upstream synchronization, **my-ECC follows upstream ECC release tags, not the upstream `main` branch**. The root `VERSION` is expected to match the upstream release tag currently synchronized into the fork. If upstream `main` has already advanced to a future version before that version is released, do not advance or preserve the fork's `VERSION` solely because of the upstream `main` state; release-tag synchronization is the source for the version baseline.
+**my-ECC follows upstream ECC release tags, not the upstream `main` branch.** The root `VERSION` is therefore a release-tag baseline and must match the `VERSION` file from the upstream release tag currently synchronized into the fork. The upstream sync workflow explicitly reconciles `VERSION` to that release-tag value, including when the fork was originally created from an upstream `main` branch whose `VERSION` had already advanced beyond the latest release.
 
-For example, ECC `2.2.2` with profile version `5` produces `2.2.2-my.5`.
+If upstream `main` has already advanced to a future version before that version is released, do not use that future `main` version as the my-ECC version baseline. Release-tag synchronization is authoritative.
+
+`profile_version` is an independent local customization revision. It is **not reset to `0` when upstream releases a new version**. For example:
+
+```text
+upstream release 2.2.1 + profile 5 → 2.2.1-my.5
+upstream release 2.2.2 + profile 5 → 2.2.2-my.5
+local profile change              → 2.2.2-my.6
+```
 
 Therefore:
 
 - It is valid to increment `profile_version` when the curated profile semantics materially change.
 - It is invalid to change only `profile_version` and leave generated artifacts stale.
 - Never hand-edit `.claude-plugin/plugin.json` just to make its version match the profile.
+- If `VERSION` is changed, regenerate all derived artifacts before committing.
 
 ## 4. Upstream-owned files
 
@@ -157,6 +166,18 @@ Do not switch from `standard` to `minimal` merely because the current effective 
 
 The repository code is authoritative if the documented policy and actual Hook behavior differ.
 
+### Runtime Hook overrides
+
+The Hook runtime also supports these environment variables:
+
+```text
+ECC_HOOKS_ENABLED
+ECC_HOOK_PROFILE
+ECC_DISABLED_HOOKS
+```
+
+Environment variables override the corresponding managed settings from `ecc/setup.json`. When debugging unexpected Hook behavior, check both the generated setup and the runtime environment before changing the profile.
+
 ## 6. Skills, Agents, Commands and Rules
 
 The profile is intentionally focused on the project's Go/Python/Vue/database stack and is designed to complement, not replace, Superpowers.
@@ -177,7 +198,7 @@ Do not add workflow-heavy Rules that duplicate Superpowers unless there is a doc
 
 `scripts/apply-my-ecc-profile.mjs` preserves the existing `.mcp.json` server map and overlays the curated `chrome-devtools` server configuration.
 
-The generator currently configures Chrome DevTools MCP for the target Linux/root runtime using headless, isolated browser execution and `--no-sandbox`.
+The generator currently configures Chrome DevTools MCP with headless, isolated browser execution and `--no-sandbox`.
 
 Do not replace the whole `.mcp.json` by hand when changing the profile. If MCP behavior needs to change, update the generator/profile design and regenerate.
 
@@ -199,6 +220,8 @@ It currently triggers on `main` when either changes:
 config/my-ecc-profile.json
 scripts/apply-my-ecc-profile.mjs
 ```
+
+A direct `VERSION` change does not trigger this workflow. If `VERSION` is changed manually, run the generator locally and verify the generated artifacts; upstream release synchronization handles the release-tag version baseline automatically.
 
 It performs:
 
@@ -234,14 +257,16 @@ The workflow:
 
 1. Gets the latest upstream release tag.
 2. Fetches upstream tags.
-3. Merges the release into `main`.
-4. Permits only the explicitly expected generated-file conflict cases.
-5. Re-runs `node scripts/apply-my-ecc-profile.mjs`.
-6. Commits generated overlay changes.
-7. Pushes `main`.
-8. Synchronizes the upstream release tag on the fork.
+3. Resolves the release tag's commit and its `VERSION` file.
+4. Merges the release into `main` when that release commit is not already contained.
+5. If the release commit is already contained, it still reconciles the fork's root `VERSION` to the release tag's `VERSION` value.
+6. Permits generated-file merge conflicts for `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `ecc/setup.json`, and `.mcp.json`; unexpected conflicts fail the workflow.
+7. Re-runs `node scripts/apply-my-ecc-profile.mjs`.
+8. Commits generated overlay changes.
+9. Pushes `main`.
+10. Synchronizes the upstream release tag on the fork.
 
-Unexpected merge conflicts fail the workflow rather than being silently overwritten.
+Unexpected merge conflicts fail the workflow rather than being silently overwritten. The release tag, rather than upstream `main`, is the version baseline.
 
 This workflow is the reason local customization should live in the profile/overlay instead of upstream Hook implementation files.
 
@@ -272,7 +297,7 @@ node scripts/apply-my-ecc-profile.mjs --check
 3. If changing `hook_profile`, perform the full `minimal`/`standard`/`strict` audit described above.
 4. Run the generator and `--check`.
 5. Run the relevant Hook tests/CI.
-6. Inspect the effective Hook set after the change.
+6. Inspect the effective Hook set after the change, including any runtime environment overrides.
 7. Update this document whenever the Hook policy, rationale, or maintenance process changes.
 
 Never remove Hook entries from upstream Hook registries merely to disable them locally.
@@ -310,13 +335,14 @@ If generator behavior or generated-file ownership changes, update this document 
 
 Before modifying `.github/workflows/sync-upstream-release.yml`:
 
-1. Preserve the upstream merge → profile reapply sequence.
+1. Preserve the upstream release-tag → version reconciliation → profile reapply sequence.
 2. Do not weaken unexpected-conflict detection.
-3. Keep generated overlay regeneration after the merge.
+3. Keep generated overlay regeneration after the merge/version reconciliation.
 4. Preserve release-tag handling.
-5. Test both new-release and already-synced/drift-repair paths when practical.
-6. Update this document with any changed CI contract or maintenance procedure.
-7. Confirm the change does not cause the profile or generated artifacts to be lost on the next upstream release.
+5. Ensure the release tag's `VERSION` remains authoritative even when the release commit is already an ancestor of `main`.
+6. Test both new-release and already-synced/drift-repair paths when practical.
+7. Update this document with any changed CI contract or maintenance procedure.
+8. Confirm the change does not cause the profile or generated artifacts to be lost on the next upstream release.
 
 ### F. Changing custom profile CI
 
@@ -336,12 +362,14 @@ Do not:
 - Delete or rewrite upstream Hook registries to disable local behavior.
 - Treat generated metadata as an independent source of truth.
 - Change `profile_version` without regenerating artifacts.
+- Reset `profile_version` to `0` merely because upstream released a new ECC version.
 - Add a disabled Hook ID without verifying that the ID exists.
 - Switch to `minimal` without auditing the current upstream Hook classification.
 - Create a second generator for plugin/setup/MCP metadata.
 - Add CI that independently rewrites generated files when the generator can do it.
 - Make a local customization that upstream sync will silently overwrite.
 - Assume profile CI alone proves that upstream release sync is safe.
+- Assume an upstream `main` VERSION is the release baseline when it is ahead of the latest release tag.
 - Leave this document stale after changing the customization or maintenance contract.
 
 ## 11. CI acceptance checklist
@@ -367,7 +395,7 @@ Before considering a customization complete:
 
 The core rule for this fork is:
 
-> **Keep upstream code upstream. Keep local policy in the profile. Keep derived state generated. Keep synchronization automated. Keep this document synchronized with the implementation.**
+> **Keep upstream code upstream. Keep local policy in the profile. Keep derived state generated. Keep synchronization automated. Follow upstream release tags for the ECC version baseline. Keep this document synchronized with the implementation.**
 
 When a future change is proposed, ask:
 
