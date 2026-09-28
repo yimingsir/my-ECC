@@ -70,8 +70,17 @@ jobs:
           set -euo pipefail
           git checkout main
           UPSTREAM_COMMIT=$(git rev-list -n 1 "$RELEASE_TAG")
+          RELEASE_VERSION=$(git show "$RELEASE_TAG:VERSION")
+          RELEASE_VERSION="${RELEASE_VERSION//$'\r'/}"
+          RELEASE_VERSION="$(printf '%s' "$RELEASE_VERSION" | tr -d '[:space:]')"
+          if [[ ! "$RELEASE_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+([-.][0-9A-Za-z.-]+)?$ ]]; then
+            echo "ERROR: VERSION at $RELEASE_TAG is invalid: '$RELEASE_VERSION'"
+            exit 1
+          fi
+
           echo "Upstream release: $RELEASE_TAG"
           echo "Upstream commit: $UPSTREAM_COMMIT"
+          echo "Release VERSION: $RELEASE_VERSION"
           echo "Current fork HEAD: $(git rev-parse HEAD)"
 
           HAS_NEW_RELEASE=true
@@ -87,7 +96,7 @@ jobs:
               BAD_CONFLICT=false
               while IFS= read -r conflict; do
                 case "$conflict" in
-                  .claude-plugin/plugin.json|.claude-plugin/marketplace.json|.mcp.json) ;;
+                  .claude-plugin/plugin.json|.claude-plugin/marketplace.json|ecc/setup.json|.mcp.json) ;;
                   *) BAD_CONFLICT=true ;;
                 esac
               done <<< "$CONFLICTS"
@@ -102,6 +111,20 @@ jobs:
               done <<< "$CONFLICTS"
               git commit --no-edit
             fi
+          fi
+
+          # VERSION is a release-tag baseline, not a value inherited from
+          # upstream main or from a previous fork state. This also repairs
+          # forks that were originally created from an upstream main branch
+          # whose VERSION had already advanced beyond the latest release.
+          CURRENT_VERSION=$(tr -d '[:space:]' < VERSION)
+          if [ "$CURRENT_VERSION" != "$RELEASE_VERSION" ]; then
+            echo "Aligning VERSION: $CURRENT_VERSION -> $RELEASE_VERSION"
+            printf '%s\n' "$RELEASE_VERSION" > VERSION
+            git add VERSION
+            git commit -m "chore: align ECC VERSION with upstream release $RELEASE_TAG"
+          else
+            echo "VERSION already matches $RELEASE_VERSION."
           fi
 
           echo "Re-applying my-ECC curated profile..."
