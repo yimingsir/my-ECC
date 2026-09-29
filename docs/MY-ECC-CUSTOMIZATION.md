@@ -145,6 +145,28 @@ A local change to an upstream-owned implementation is acceptable only when the b
 
 Do not edit upstream Hook registries merely to disable local behavior.
 
+### Local agent routing divergence
+
+The project-level browser routing policy requires `playwright-cli` to be the default coding-agent browser capability, while the upstream `agents/e2e-runner.md` historically preferred Agent Browser. The fork therefore intentionally maintains a local change to:
+
+```text
+agents/e2e-runner.md
+```
+
+The local version now uses:
+
+```text
+playwright-cli
+    ↓
+Playwright Test CLI
+    ↓
+Chrome DevTools MCP (diagnostic escalation)
+```
+
+with Playwright MCP reserved for specialized exploratory cases or explicit user requests.
+
+This divergence cannot be expressed through `config/my-ecc-profile.json` because the profile selects the agent but does not override its internal tool-routing instructions. Keep the divergence documented, review it when upstream changes `agents/e2e-runner.md`, and reapply the local routing intentionally after upstream release synchronization when necessary.
+
 ## 5. Current Hook policy
 
 The current local policy is:
