@@ -89,8 +89,10 @@ basic console / requests
     ↓
 still missing diagnostic evidence?
     ↓
-Chrome DevTools MCP
+return control to the parent workflow for Chrome DevTools MCP
 ```
+
+This agent is intentionally limited to its declared tools. Do not assume Chrome DevTools MCP or Playwright MCP is directly available inside this agent.
 
 Do not require the same browser session to be shared across tools unless state transfer or CDP attachment is explicitly configured.
 
