@@ -38,7 +38,7 @@ config/my-ecc-profile.json
 Current profile state is defined by that file. At the time this document was last synchronized, it uses:
 
 ```text
-profile_version: 6
+profile_version: 7
 hook_profile: standard
 hooks_enabled: true
 ```
@@ -59,7 +59,35 @@ The generator is:
 scripts/apply-my-ecc-profile.mjs
 ```
 
-It validates the profile and generates the derived plugin metadata, hook setup, and MCP overlay.
+It validates the profile and generates the derived plugin metadata, hook setup, MCP overlay, and selected-agent model routing overlay.
+
+## 2.1. Model routing policy
+
+The local model policy is stored in `config/my-ecc-profile.json` under `model_policy`.
+
+```text
+Default selected-agent model → inherit the current Claude Code session model
+
+Mechanical agents → Haiku
+  build-error-resolver
+  go-build-resolver
+  django-build-resolver
+  pr-test-analyzer
+
+All other selected agents → inherit
+  └─ normal session: Sonnet
+  └─ latency/peak mode: Haiku when safely degradable
+
+Critical architecture, spec/plan, security, data-consistency, performance-design,
+and complex-debugging decisions remain Sonnet responsibilities at the workflow
+orchestrator level.
+```
+
+my-ECC does not infer company gateway load, modify the active session model through Hooks, or add a second model-routing Agent. Superpowers owns workflow-level model selection; my-ECC owns the default agent model policy.
+
+The four mechanical agents are pinned to Haiku to preserve Sonnet capacity. Other selected agents intentionally inherit the current session model so that switching the session between Sonnet and Haiku changes their model without editing the plugin.
+
+Do not add `CLAUDE_CODE_SUBAGENT_MODEL` as a global default merely to implement this policy.
 
 ## 3. Generated files
 
@@ -70,6 +98,7 @@ These files are derived outputs and are **not independent configuration sources*
 .claude-plugin/marketplace.json
 ecc/setup.json
 .mcp.json
+agents/*.md (selected agents only; `model:` frontmatter is generated from `model_policy`)
 ```
 
 Generate them with:
@@ -219,7 +248,7 @@ Environment variables override the corresponding managed settings from `ecc/setu
 
 ## 6. Skills, Agents, Commands and Rules
 
-The profile is intentionally focused on the project's Go/Python/Vue/database stack and is designed to complement, not replace, Superpowers.
+The profile is intentionally focused on the project's Go/Python/Vue/database stack and is designed to complement, not replace, Superpowers. Model routing is task-based: only the four mechanical agents are pinned to Haiku; the rest inherit the current session model.
 
 The active profile deliberately includes:
 
@@ -337,7 +366,7 @@ This workflow is the reason local customization should live in the profile/overl
 ### A. Changing Skills / Agents / Commands
 
 1. Edit `config/my-ecc-profile.json`.
-2. Verify every referenced component exists.
+2. Verify every referenced component exists and that `model_policy.haiku_agents` is a subset of the selected agents.
 3. Run:
 
 ```bash
@@ -445,6 +474,7 @@ Before considering a customization complete:
 [ ] No unintended upstream-owned files changed
 [ ] Disabled Hook IDs are valid
 [ ] Skills/Agents/Commands referenced by the profile exist
+[ ] Selected agent model frontmatter matches `model_policy`
 [ ] Documentation was reviewed and updated when behavior or maintenance rules changed
 [ ] Profile Sync CI passes
 [ ] Relevant validation/tests pass
