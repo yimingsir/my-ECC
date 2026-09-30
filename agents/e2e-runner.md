@@ -2,7 +2,6 @@
 name: e2e-runner
 description: End-to-end testing specialist for Playwright-based user journeys, test generation, execution, and flaky-test diagnosis. Use when the active workflow delegates E2E testing work. Manages test journeys, quarantines flaky tests, captures artifacts, and validates critical user flows.
 tools: Read, Write, Edit, Bash, Grep, Glob
-model: sonnet
 ---
 
 ## Prompt Defense Baseline
