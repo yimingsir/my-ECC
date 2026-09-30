@@ -80,6 +80,19 @@ for (const key of ['skills', 'agents', 'commands']) {
 }
 
 if (!Array.isArray(profile.disabled_hooks)) fail('Profile field disabled_hooks must be an array.');
+
+const modelPolicy = profile.model_policy || {
+  schema_version: 1,
+  default_agent_model: 'inherit',
+  haiku_agents: []
+};
+if (modelPolicy.default_agent_model !== 'inherit') fail('model_policy.default_agent_model must be inherit.');
+if (!Array.isArray(modelPolicy.haiku_agents)) fail('model_policy.haiku_agents must be an array.');
+if (new Set(modelPolicy.haiku_agents).size !== modelPolicy.haiku_agents.length) fail('model_policy.haiku_agents contains duplicates.');
+const selectedAgentSet = new Set(profile.agents);
+const unknownModelAgents = modelPolicy.haiku_agents.filter((agent) => !selectedAgentSet.has(agent));
+if (unknownModelAgents.length) fail('model_policy.haiku_agents references agents not selected by profile: ' + unknownModelAgents.join(', '));
+const haikuAgentSet = new Set(modelPolicy.haiku_agents);
 if (new Set(profile.disabled_hooks).size !== profile.disabled_hooks.length) fail('Profile field disabled_hooks contains duplicates.');
 
 if (!['minimal', 'standard', 'strict'].includes(profile.hook_profile)) fail('Unsupported hook profile: ' + profile.hook_profile);
@@ -114,6 +127,30 @@ if (unknownDisabledHooks.length > 0) {
     unknownDisabledHooks.join(', ') +
     '. Checked hooks.metadata.json and hook implementation registries under scripts/hooks/.'
   );
+}
+
+const applyAgentModelPolicy = (agentName, source) => {
+  const frontmatter = source.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n/);
+  if (!frontmatter) fail('Agent ' + agentName + ' is missing YAML frontmatter.');
+
+  const lines = frontmatter[1]
+    .split(/\r?\n/)
+    .filter((line) => !/^\s*model\s*:/.test(line));
+
+  if (haikuAgentSet.has(agentName)) {
+    const toolsIndex = lines.findIndex((line) => /^\s*tools\s*:/.test(line));
+    lines.splice(toolsIndex >= 0 ? toolsIndex : lines.length, 0, 'model: haiku');
+  }
+
+  return '---\n' + lines.join('\n') + '\n---\n' + source.slice(frontmatter[0].length);
+};
+
+const expectedAgentFiles = new Map();
+for (const agentName of profile.agents) {
+  const agentPath = path.join(ROOT, 'agents', agentName + '.md');
+  if (!fs.existsSync(agentPath)) fail('Agent file is missing: agents/' + agentName + '.md');
+  const currentAgent = fs.readFileSync(agentPath, 'utf8');
+  expectedAgentFiles.set(agentPath, applyAgentModelPolicy(agentName, currentAgent));
 }
 
 const pluginVersion = eccVersion + '-my.' + profile.profile_version;
@@ -180,6 +217,11 @@ const expectedHookSetup = JSON.stringify(hookSetup, null, 2) + '\n';
 const expectedMcpConfig = JSON.stringify(expectedMcp, null, 2) + '\n';
 
 if (CHECK) {
+  for (const [agentPath, expectedAgent] of expectedAgentFiles) {
+    if (fs.readFileSync(agentPath, 'utf8') !== expectedAgent) {
+      fail(path.relative(ROOT, agentPath) + ' has model-policy drift; regenerate it with this script.');
+    }
+  }
   if (!fs.existsSync(PLUGIN) || fs.readFileSync(PLUGIN, 'utf8') !== expectedPlugin) fail('plugin.json is stale; regenerate it with this script.');
   if (!fs.existsSync(MARKETPLACE) || fs.readFileSync(MARKETPLACE, 'utf8') !== expectedMarketplace) fail('marketplace.json is stale; regenerate it with this script.');
   if (!fs.existsSync(HOOK_SETUP) || fs.readFileSync(HOOK_SETUP, 'utf8') !== expectedHookSetup) fail('ecc/setup.json is stale; regenerate it with this script.');
@@ -191,5 +233,8 @@ if (CHECK) {
   fs.writeFileSync(MARKETPLACE, expectedMarketplace);
   fs.writeFileSync(HOOK_SETUP, expectedHookSetup);
   fs.writeFileSync(MCP_CONFIG, expectedMcpConfig);
+  for (const [agentPath, expectedAgent] of expectedAgentFiles) {
+    fs.writeFileSync(agentPath, expectedAgent);
+  }
   console.log('[my-ECC] Generated my-ECC plugin + marketplace + hook setup + MCP overlay for ECC ' + eccVersion + ' (' + pluginVersion + ').');
 }
