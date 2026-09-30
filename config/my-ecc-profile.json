@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "my-ecc",
-  "profile_version": 6,
+  "profile_version": 7,
   "description": "Curated ECC profile for Go/Python/Vue/PostgreSQL/MySQL/Redis projects, designed to complement Superpowers.",
   "hook_profile": "standard",
   "hooks_enabled": true,
@@ -106,5 +106,15 @@
     "tdd-workflow",
     "verification-loop",
     "delivery-gate"
-  ]
+  ],
+  "model_policy": {
+    "schema_version": 1,
+    "default_agent_model": "inherit",
+    "haiku_agents": [
+      "build-error-resolver",
+      "go-build-resolver",
+      "django-build-resolver",
+      "pr-test-analyzer"
+    ]
+  }
 }
