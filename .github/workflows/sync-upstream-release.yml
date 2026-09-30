@@ -98,11 +98,10 @@ jobs:
                 case "$conflict" in
                   .claude-plugin/plugin.json|.claude-plugin/marketplace.json|ecc/setup.json|.mcp.json) ;;
                   *)
-                    if ! node -e 'const fs=require("fs"); const p=JSON.parse(fs.readFileSync("config/my-ecc-profile.json","utf8")); process.exit(p.agents.includes(process.argv[1].replace(/^agents\\//,"").replace(/\\.md$/,"")) ? 0 : 1);' "$conflict"; then
+                    if ! node -e 'const fs=require("fs"); const p=JSON.parse(fs.readFileSync("config/my-ecc-profile.json","utf8")); const path=process.argv[1]; const name=path.startsWith("agents/") ? path.slice(7,-3) : ""; process.exit(p.agents.includes(name) ? 0 : 1);' "$conflict"; then
                       BAD_CONFLICT=true
                     fi
                     ;;
-                  *) BAD_CONFLICT=true ;;
                 esac
               done <<< "$CONFLICTS"
               if [ "$BAD_CONFLICT" = true ] || [ -z "$CONFLICTS" ]; then
