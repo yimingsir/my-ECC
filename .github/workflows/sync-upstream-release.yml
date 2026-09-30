@@ -97,6 +97,11 @@ jobs:
               while IFS= read -r conflict; do
                 case "$conflict" in
                   .claude-plugin/plugin.json|.claude-plugin/marketplace.json|ecc/setup.json|.mcp.json) ;;
+                  *)
+                    if ! node -e 'const fs=require("fs"); const p=JSON.parse(fs.readFileSync("config/my-ecc-profile.json","utf8")); process.exit(p.agents.includes(process.argv[1].replace(/^agents\\//,"").replace(/\\.md$/,"")) ? 0 : 1);' "$conflict"; then
+                      BAD_CONFLICT=true
+                    fi
+                    ;;
                   *) BAD_CONFLICT=true ;;
                 esac
               done <<< "$CONFLICTS"
@@ -130,8 +135,10 @@ jobs:
           echo "Re-applying my-ECC curated profile..."
           node scripts/apply-my-ecc-profile.mjs
 
-          if ! git diff --quiet -- .claude-plugin/plugin.json .claude-plugin/marketplace.json ecc/setup.json .mcp.json; then
-            git add .claude-plugin/plugin.json .claude-plugin/marketplace.json ecc/setup.json .mcp.json
+          mapfile -t AGENT_PATHS < <(node -e 'const fs=require("fs"); const p=JSON.parse(fs.readFileSync("config/my-ecc-profile.json","utf8")); console.log(p.agents.map(a => "agents/" + a + ".md").join("\n"));')
+          GENERATED_PATHS=(.claude-plugin/plugin.json .claude-plugin/marketplace.json ecc/setup.json .mcp.json "${AGENT_PATHS[@]}")
+          if ! git diff --quiet -- "${GENERATED_PATHS[@]}"; then
+            git add -- "${GENERATED_PATHS[@]}"
             git commit -m "chore: refresh my-ECC curated profile"
           fi
 
