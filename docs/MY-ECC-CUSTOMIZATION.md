@@ -98,7 +98,7 @@ These files are derived outputs and are **not independent configuration sources*
 .claude-plugin/marketplace.json
 ecc/setup.json
 .mcp.json
-agents/*.md (selected agents only; `model:` frontmatter is generated from `model_policy`)
+agents/*.md (selected agents only; `model:` frontmatter is generated from `model_policy`. The documented `agents/e2e-runner.md` routing divergence remains locally owned and is never auto-replaced during upstream conflict handling.)
 ```
 
 Generate them with:
@@ -181,6 +181,8 @@ The project-level browser routing policy requires `playwright-cli` to be the def
 ```text
 agents/e2e-runner.md
 ```
+
+This file is a documented local divergence and is **not** treated as a generated-model-only merge conflict by `sync-upstream-release.yml`. If an upstream release changes the same region, the sync fails for manual review instead of discarding the local browser-routing policy.
 
 The local version now uses:
 
