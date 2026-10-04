@@ -355,7 +355,7 @@ The workflow:
 3. Resolves the release tag's commit and its `VERSION` file.
 4. Merges the release into `main` when that release commit is not already contained.
 5. If the release commit is already contained, it still reconciles the fork's root `VERSION` to the release tag's `VERSION` value.
-6. Permits generated-file merge conflicts for `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `ecc/setup.json`, and `.mcp.json`; unexpected conflicts fail the workflow.
+6. Permits expected merge conflicts for generated overlay files (`.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `ecc/setup.json`, `.mcp.json`) and `VERSION`; generated files are regenerated afterward, while `VERSION` is reconciled to the upstream release tag value. Unexpected conflicts fail the workflow.
 7. Re-runs `node scripts/apply-my-ecc-profile.mjs`.
 8. Commits generated overlay changes.
 9. Pushes `main`.
