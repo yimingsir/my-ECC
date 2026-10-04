@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "my-ecc",
-  "profile_version": 8,
+  "profile_version": 9,
   "description": "Curated ECC profile for Go/Python/Vue/PostgreSQL/MySQL/Redis projects, designed to complement Superpowers.",
   "hook_profile": "standard",
   "hooks_enabled": true,
@@ -115,5 +115,11 @@
       "django-build-resolver",
       "pr-test-analyzer"
     ]
+  },
+  "runtime_compatibility": {
+    "claude_code": {
+      "target": "2.1.90",
+      "mode": "pinned"
+    }
   }
 }
