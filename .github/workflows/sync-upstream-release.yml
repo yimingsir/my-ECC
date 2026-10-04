@@ -142,7 +142,18 @@ jobs:
           fi
 
           echo "Push updated main..."
-          git push origin main
+          if [ -z "${WORKFLOW_TOKEN:-}" ]; then
+            echo "ERROR: WORKFLOW_TOKEN is required to push commits that add or update .github/workflows/*."
+            echo "Create a fine-grained PAT with Contents: Read and write + Workflows: Read and write for this repository, then save it as the WORKFLOW_TOKEN Actions secret."
+            exit 1
+          fi
+
+          # The merge can update .github/workflows/* from upstream. GITHUB_TOKEN
+          # is intentionally not sufficient for this push because GitHub blocks
+          # GitHub Apps from creating/updating workflow files without the
+          # Workflows permission. Reuse the PAT already required for release tags.
+          PUSH_REMOTE="https://x-access-token:${WORKFLOW_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git -c http.https://github.com/.extraheader= push "$PUSH_REMOTE" main
 
           echo "Sync release tag $RELEASE_TAG..."
           REMOTE_TAG_COMMIT=$(git ls-remote origin "refs/tags/$RELEASE_TAG^{}" | awk 'NR==1 {print $1}')
