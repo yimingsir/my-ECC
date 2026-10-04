@@ -96,7 +96,7 @@ jobs:
               BAD_CONFLICT=false
               while IFS= read -r conflict; do
                 case "$conflict" in
-                  .claude-plugin/plugin.json|.claude-plugin/marketplace.json|ecc/setup.json|.mcp.json) ;;
+                  .claude-plugin/plugin.json|.claude-plugin/marketplace.json|ecc/setup.json|.mcp.json|VERSION) ;;
                   *)
                     if ! node -e 'const fs=require("fs"); const p=JSON.parse(fs.readFileSync("config/my-ecc-profile.json","utf8")); const path=process.argv[1]; const name=path.startsWith("agents/") ? path.slice(7,-3) : ""; const generatedModelOnly=!["e2e-runner"].includes(name); process.exit(p.agents.includes(name) && generatedModelOnly ? 0 : 1);' "$conflict"; then
                       BAD_CONFLICT=true
