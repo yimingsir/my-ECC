@@ -1,47 +1,48 @@
 {
-  "name": "ecc",
+  "name": "my-ecc",
   "owner": {
-    "name": "Affaan Mustafa",
-    "email": "me@affaanmustafa.com"
+    "name": "yimingsir",
+    "url": "https://github.com/yimingsir"
   },
   "metadata": {
-    "description": "Harness-native ECC skills, hooks, rules, MCP conventions, and operator workflows"
+    "description": "Curated ECC profile for yimingsir's Superpowers-first Claude Code workflow."
   },
   "plugins": [
     {
-      "name": "ecc",
+      "name": "my-ecc",
       "source": "./",
-      "description": "Harness-native ECC operator layer - 68 agents, 293 skills, 94 legacy command shims, reusable hooks, rules, selective install profiles, and production-ready workflows for Claude Code, Codex, OpenCode, Cursor, and related agent harnesses",
-      "version": "2.2.3",
+      "description": "Curated ECC profile for Go/Python/Vue/PostgreSQL/MySQL/Redis projects, designed to complement Superpowers.",
       "author": {
-        "name": "Affaan Mustafa",
-        "email": "me@affaanmustafa.com"
+        "name": "yimingsir",
+        "url": "https://github.com/yimingsir"
       },
-      "homepage": "https://ecc.tools",
-      "repository": "https://github.com/affaan-m/ECC",
+      "homepage": "https://github.com/yimingsir/my-ECC",
+      "repository": "https://github.com/yimingsir/my-ECC",
       "license": "MIT",
       "keywords": [
-        "agents",
-        "skills",
-        "hooks",
-        "commands",
-        "tdd",
-        "code-review",
-        "security",
-        "best-practices"
+        "claude-code",
+        "ecc",
+        "superpowers",
+        "go",
+        "python",
+        "django",
+        "fastapi",
+        "vue",
+        "postgresql",
+        "mysql",
+        "redis"
       ],
       "category": "workflow",
       "tags": [
-        "agents",
-        "skills",
-        "hooks",
-        "commands",
-        "tdd",
-        "code-review",
-        "security",
-        "best-practices"
+        "curated",
+        "engineering",
+        "go",
+        "python",
+        "vue",
+        "database",
+        "security"
       ],
-      "strict": false
+      "strict": true
     }
   ]
 }
