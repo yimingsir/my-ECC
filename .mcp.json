@@ -2,13 +2,7 @@
   "mcpServers": {
     "chrome-devtools": {
       "command": "npx",
-      "args": [
-        "-y",
-        "chrome-devtools-mcp@latest",
-        "--headless",
-        "--isolated",
-        "--chrome-arg=--no-sandbox"
-      ]
+      "args": ["-y", "chrome-devtools-mcp@1.10.1"]
     }
   }
 }

@@ -1,48 +1,47 @@
 {
-  "name": "my-ecc",
+  "name": "ecc",
   "owner": {
-    "name": "yimingsir",
-    "url": "https://github.com/yimingsir"
+    "name": "Affaan Mustafa",
+    "email": "me@affaanmustafa.com"
   },
   "metadata": {
-    "description": "Curated ECC profile for yimingsir's Superpowers-first Claude Code workflow."
+    "description": "Harness-native ECC skills, hooks, rules, MCP conventions, and operator workflows"
   },
   "plugins": [
     {
-      "name": "my-ecc",
+      "name": "ecc",
       "source": "./",
-      "description": "Curated ECC profile for Go/Python/Vue/PostgreSQL/MySQL/Redis projects, designed to complement Superpowers.",
+      "description": "Harness-native ECC operator layer - 68 agents, 293 skills, 94 legacy command shims, reusable hooks, rules, selective install profiles, and production-ready workflows for Claude Code, Codex, OpenCode, Cursor, and related agent harnesses",
+      "version": "2.2.3",
       "author": {
-        "name": "yimingsir",
-        "url": "https://github.com/yimingsir"
+        "name": "Affaan Mustafa",
+        "email": "me@affaanmustafa.com"
       },
-      "homepage": "https://github.com/yimingsir/my-ECC",
-      "repository": "https://github.com/yimingsir/my-ECC",
+      "homepage": "https://ecc.tools",
+      "repository": "https://github.com/affaan-m/ECC",
       "license": "MIT",
       "keywords": [
-        "claude-code",
-        "ecc",
-        "superpowers",
-        "go",
-        "python",
-        "django",
-        "fastapi",
-        "vue",
-        "postgresql",
-        "mysql",
-        "redis"
+        "agents",
+        "skills",
+        "hooks",
+        "commands",
+        "tdd",
+        "code-review",
+        "security",
+        "best-practices"
       ],
       "category": "workflow",
       "tags": [
-        "curated",
-        "engineering",
-        "go",
-        "python",
-        "vue",
-        "database",
-        "security"
+        "agents",
+        "skills",
+        "hooks",
+        "commands",
+        "tdd",
+        "code-review",
+        "security",
+        "best-practices"
       ],
-      "strict": true
+      "strict": false
     }
   ]
 }
