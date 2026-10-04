@@ -38,7 +38,7 @@ config/my-ecc-profile.json
 Current profile state is defined by that file. At the time this document was last synchronized, it uses:
 
 ```text
-profile_version: 7
+profile_version: 8
 hook_profile: standard
 hooks_enabled: true
 ```
@@ -258,13 +258,17 @@ The profile is intentionally focused on the project's Go/Python/Vue/database sta
 
 The active profile deliberately includes:
 
-- **Skills:** stack/domain patterns plus `frontend-design-direction`, `codebase-onboarding`, `skill-stocktake`, and `strategic-compact`.
-- **Agents:** stack-specific build/review agents plus `a11y-architect`, `performance-optimizer`, and `type-design-analyzer`.
+- **Skills:** stack/domain patterns plus `frontend-design-direction`, `codebase-onboarding`, `skill-stocktake`, `strategic-compact`, and non-workflow API/contract, production, and deployment guidance.
+- **Agents:** stack-specific build/review agents plus `typescript-reviewer`, `a11y-architect`, `performance-optimizer`, and `type-design-analyzer`.
+
+The profile intentionally excludes generic `documentation-lookup` because Context7 is already routed directly by the global `CLAUDE.md`/`code-intelligence` policy. Generic `security-review` is also excluded because the canonical `security-guidance` plugin, `security-reviewer`, and stack-specific security skills already cover the global security lanes; the upstream skill is not sufficiently aligned with the project's Go/Python/Vue stack to justify another always-available layer.
 - **Commands:** explicit build/test/review/security/quality utilities that do not establish a competing primary workflow.
 
 The following were intentionally removed from the global profile because their behavior overlaps with Superpowers or is poorly aligned with the curated stack:
 
 - Skill: `search-first` — its own research-before-coding workflow is better treated as part of Superpowers routing/research when applicable.
+- Skill: `documentation-lookup` — a thin Context7 wrapper; repository/tool routing already sends versioned library and API questions directly to Context7.
+- Skill: `security-review` — useful generic security material, but overlaps with the canonical `security-guidance` plugin plus `security-reviewer` and stack-specific security skills, while its examples skew toward non-project frameworks.
 - Skill: `ai-regression-testing` — useful technique, but its current implementation is strongly oriented around Next.js/Vitest/Supabase-style examples and is better applied project-locally when needed.
 - Agents: `architect`, `code-reviewer`, `refactor-cleaner` — they impose overlapping workflow/review/refactoring behavior or stack assumptions that are not appropriate as global defaults.
 - Commands: `code-review`, `refactor-clean` — their behavior duplicates the specialist review/workflow layers and is not retained as a global command.
@@ -358,7 +362,7 @@ The workflow:
 6. Permits expected merge conflicts for generated overlay files (`.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `ecc/setup.json`, `.mcp.json`) and `VERSION`; generated files are regenerated afterward, while `VERSION` is reconciled to the upstream release tag value. Unexpected conflicts fail the workflow.
 7. Re-runs `node scripts/apply-my-ecc-profile.mjs`.
 8. Commits generated overlay changes.
-9. Pushes `main`.
+9. Pushes `main` using `WORKFLOW_TOKEN` rather than the Actions `GITHUB_TOKEN`, because an upstream release may add or modify `.github/workflows/*` and GitHub requires the token used for that push to have workflow-write permission. The `WORKFLOW_TOKEN` secret should be a repository-scoped fine-grained PAT with `Contents: Read and write` and `Workflows: Read and write`.
 10. Synchronizes the upstream release tag on the fork.
 
 Unexpected merge conflicts fail the workflow rather than being silently overwritten. The release tag, rather than upstream `main`, is the version baseline.
@@ -437,6 +441,7 @@ Before modifying `.github/workflows/sync-upstream-release.yml`:
 5. Ensure the release tag's `VERSION` remains authoritative even when the release commit is already an ancestor of `main`.
 6. Test both new-release and already-synced/drift-repair paths when practical.
 7. Update this document with any changed CI contract or maintenance procedure.
+8. Keep `WORKFLOW_TOKEN` available for both `main` pushes and release-tag synchronization when the synced commit can contain workflow-file changes.
 8. Confirm the change does not cause the profile or generated artifacts to be lost on the next upstream release.
 
 ### F. Changing custom profile CI
