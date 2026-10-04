@@ -137,12 +137,12 @@ Recommendation: FAIL: Block merge until CRITICAL issue is fixed
 
 ## Integration with Other Commands
 
-- Use `/go-test` first to ensure tests pass
-- Use `/go-build` if build errors occur
-- Use `/go-review` before committing
-- Use `/code-review` for non-Go specific concerns
+- Use /go-test when the change needs focused Go test design or execution.
+- Use /go-build when the build or type-checking path is failing.
+- Use agent-routing when an additional specialist lane such as type design is materially relevant.
+- Superpowers remains the primary implementation, testing, review, and completion workflow.
 
 ## Related
 
-- Agent: `agents/go-reviewer.md`
-- Skills: `skills/golang-patterns/`, `skills/golang-testing/`
+- Agent: agents/go-reviewer.md
+- Skills: skills/golang-patterns/, skills/golang-testing/
