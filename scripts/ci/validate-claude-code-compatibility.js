@@ -51,12 +51,12 @@ if (!target) {
 }
 
 const requirementPatterns = [
-  /requires?\s+Claude Code(?:\s+version)?\s*(?:v|>=|:)?\s*(\d+\.\d+\.\d+)\s*(?:or later|or newer)/ig,
-  /minimum\s+(?:supported\s+)?Claude Code\s+version\s*[:=]?\s*v?(\d+\.\d+\.\d+)/ig,
+  /requires?\s+Claude Code(?:\s+version)?\s*(?:[*_`]+)?\s*(?:v|>=|:)?\s*(\d+\.\d+\.\d+)\s*(?:[*_`]+)?\s*(?:or later|or newer)/ig,
+  /minimum\s+(?:supported\s+)?Claude Code\s+version\s*[:=]?\s*(?:[*_`]+)?\s*v?(\d+\.\d+\.\d+)\s*(?:[*_`]+)?/ig,
   /Claude Code\s+v?(\d+\.\d+\.\d+)\s+(?:or later|or newer)/ig,
 ];
 
-const informationalPattern = /Claude Code\s+v?(\d+\.\d+\.\d+)/ig;
+const informationalPattern = /Claude Code\s+(?:[*_`]+\s*)?v?(\d+\.\d+\.\d+)\s*(?:[*_`]+)?/ig;
 let errors = 0;
 let warnings = 0;
 let scanned = 0;
