@@ -1,6 +1,6 @@
 {
   "name": "my-ecc",
-  "version": "2.2.3-my.7",
+  "version": "2.2.3-my.8",
   "description": "Curated ECC profile for Go/Python/Vue/PostgreSQL/MySQL/Redis projects, designed to complement Superpowers.",
   "author": {
     "name": "yimingsir",
@@ -55,8 +55,6 @@
     "./skills/redis-patterns",
     "./skills/python-patterns",
     "./skills/python-testing",
-    "./skills/security-review",
-    "./skills/documentation-lookup",
     "./skills/contract-first",
     "./skills/production-audit",
     "./skills/deployment-patterns",
@@ -80,6 +78,7 @@
     "./agents/silent-failure-hunter.md",
     "./agents/security-reviewer.md",
     "./agents/vue-reviewer.md",
+    "./agents/typescript-reviewer.md",
     "./agents/a11y-architect.md",
     "./agents/performance-optimizer.md",
     "./agents/type-design-analyzer.md"
