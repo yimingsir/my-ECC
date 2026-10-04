@@ -224,7 +224,7 @@ jobs:
       - name: Validate command registry
         run: npm run command-registry:check
         continue-on-error: false
-
+\n      - name: Validate Claude Code compatibility\n        run: node scripts/ci/validate-claude-code-compatibility.js\n        continue-on-error: false\n
       - name: Check unicode safety
         run: node scripts/ci/check-unicode-safety.js
         continue-on-error: false
