@@ -1,6 +1,6 @@
 {
   "name": "my-ecc",
-  "version": "2.2.3-my.8",
+  "version": "2.2.3-my.9",
   "description": "Curated ECC profile for Go/Python/Vue/PostgreSQL/MySQL/Redis projects, designed to complement Superpowers.",
   "author": {
     "name": "yimingsir",
