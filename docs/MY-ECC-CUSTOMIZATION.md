@@ -131,6 +131,11 @@ The generator computes the plugin version as:
 
 If upstream `main` has already advanced to a future version before that version is released, do not use that future `main` version as the my-ECC version baseline. Release-tag synchronization is authoritative.
 
+
+
+### Claude Code runtime target
+
+The curated profile targets **Claude Code 2.1.90**. `scripts/ci/validate-claude-code-compatibility.js` checks the selected Skills, Agents, and Commands for explicit minimum-version requirements above this target. It does not manage project Rules.
 `profile_version` is an independent local customization revision. It is **not reset to `0` when upstream releases a new ECC version**. For example:
 
 ```text
