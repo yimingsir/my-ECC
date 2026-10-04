@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "my-ecc",
-  "profile_version": 7,
+  "profile_version": 8,
   "description": "Curated ECC profile for Go/Python/Vue/PostgreSQL/MySQL/Redis projects, designed to complement Superpowers.",
   "hook_profile": "standard",
   "hooks_enabled": true,
@@ -51,8 +51,6 @@
     "redis-patterns",
     "python-patterns",
     "python-testing",
-    "security-review",
-    "documentation-lookup",
     "contract-first",
     "production-audit",
     "deployment-patterns",
@@ -76,6 +74,7 @@
     "silent-failure-hunter",
     "security-reviewer",
     "vue-reviewer",
+    "typescript-reviewer",
     "a11y-architect",
     "performance-optimizer",
     "type-design-analyzer"
