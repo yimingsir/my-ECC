@@ -51,7 +51,7 @@ The current curation follows these boundaries:
 - ECC workflow-heavy components that duplicate Superpowers are excluded from the global profile.
 - Stack/domain knowledge, specialist reviewers, build/test resolvers, security, accessibility, performance, type-design, and explicit utility commands remain available.
 - `strategic-compact` is enabled as ECC runtime/context guidance; it does not own task workflow.
-- `continuous-learning-v2`, `living-docs-governance`, `harness-optimizer`, and `ai-regression-testing` remain deferred rather than globally enabled.
+- `continuous-learning-v2` is enabled as an observational knowledge layer; `living-docs-governance`, `harness-optimizer`, and `ai-regression-testing` remain deferred rather than globally enabled.
 
 The generator is:
 
@@ -217,7 +217,7 @@ hooks_enabled: true
 + explicit disabled_hooks
 ```
 
-The exact `disabled_hooks` list is maintained only in `config/my-ecc-profile.json`. The local policy deliberately disables broad Bash verification/GateGuard/reminder/tmux/commit-quality automation, governance/learning/MCP checks, dispatcher/skill tracking, Plan Canvas session behavior, and several Stop/SessionEnd automation hooks.
+The exact `disabled_hooks` list is maintained only in `config/my-ecc-profile.json`. The local policy deliberately disables broad Bash verification/GateGuard/reminder/tmux/commit-quality automation, governance/MCP checks, dispatcher/skill tracking, Plan Canvas session behavior, and several Stop/SessionEnd automation hooks. The continuous-learning-v2 observation Hook is intentionally enabled as a deterministic knowledge-capture layer.
 
 The strategic context hook `pre:edit-write:suggest-compact` is intentionally **enabled** in the current profile. It was removed from `disabled_hooks` because `strategic-compact` provides context-window-aware, advisory compaction suggestions rather than forced workflow behavior.
 
@@ -280,11 +280,25 @@ The following were intentionally removed from the global profile because their b
 
 The following remain deferred rather than globally enabled:
 
-- `continuous-learning-v2` — introduces adaptive behavior/state that is intentionally kept out of the reproducible global baseline.
 - `living-docs-governance` — useful for large documentation-heavy projects but adds governance ceremony beyond the default workflow.
 - `harness-optimizer` — intentionally excluded while the Claude Code harness itself is being curated, to avoid a second self-optimization control loop.
 
 `test-coverage` and `quality-gate` remain as explicit commands because they are operator-invoked utilities rather than primary workflow owners.
+
+### Continuous-learning-v2 policy
+
+`continuous-learning-v2` is enabled in the curated profile, but only as a **knowledge/learning layer** behind the Superpowers-first workflow.
+
+Policy:
+
+- Observation capture is enabled through the upstream plugin Hook `pre:observe:continuous-learning`; do not duplicate this Hook in user/project `settings.json`.
+- The background observer is enabled through an external user-owned `CLV2_CONFIG` file; do not change `skills/continuous-learning-v2/config.json`, because that file is upstream-owned.
+- The observer starts lazily and analyzes project-scoped observations using the fork's project detection. It does not become a task-planning or implementation workflow.
+- `/instinct-status`, `/projects`, `/instinct-export`, `/instinct-import`, `/promote`, and `/evolve` remain explicit operator actions. **Do not auto-run `/evolve` or automatically promote instincts to global scope.**
+- New instincts are evidence, not rules. They should become reusable engineering guidance only after repeated observations, clear boundaries, and verification in real tasks.
+- Project scope is the default. Global promotion is deliberate and should require evidence across multiple projects.
+- The pinned runtime target remains Claude Code 2.1.90. The compatibility check must pass before relying on CLv2 changes that introduce newer runtime assumptions.
+- The observer uses the configured Claude CLI/model and therefore must inherit the user's existing internal gateway/proxy environment. If the observer cannot reach the configured gateway, fix the runtime environment rather than weakening the CLv2 safety boundary.
 
 Profile-managed components are declared in:
 
