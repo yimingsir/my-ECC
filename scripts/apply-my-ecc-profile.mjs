@@ -96,6 +96,10 @@ const haikuAgentSet = new Set(modelPolicy.haiku_agents);
 if (new Set(profile.disabled_hooks).size !== profile.disabled_hooks.length) fail('Profile field disabled_hooks contains duplicates.');
 
 if (!['minimal', 'standard', 'strict'].includes(profile.hook_profile)) fail('Unsupported hook profile: ' + profile.hook_profile);
+const clv2Enabled = profile.skills.includes('continuous-learning-v2');
+if (clv2Enabled && profile.disabled_hooks.includes('pre:observe:continuous-learning')) {
+  fail('continuous-learning-v2 is selected but its observation Hook is disabled; keep the learning layer enabled or remove the Skill from the profile.');
+}
 
 const missing = [];
 for (const item of profile.skills) if (!fs.existsSync(path.join(ROOT, 'skills', item, 'SKILL.md'))) missing.push('skills/' + item + '/SKILL.md');
