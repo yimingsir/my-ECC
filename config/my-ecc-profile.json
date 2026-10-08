@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "my-ecc",
-  "profile_version": 9,
+  "profile_version": 10,
   "description": "Curated ECC profile for Go/Python/Vue/PostgreSQL/MySQL/Redis projects, designed to complement Superpowers.",
   "hook_profile": "standard",
   "hooks_enabled": true,
@@ -14,7 +14,6 @@
     "pre:bash:gateguard-fact-force",
     "pre:powershell:gateguard-fact-force",
     "pre:write:doc-file-warning",
-    "pre:observe:continuous-learning",
     "pre:governance-capture",
     "pre:mcp-health-check",
     "pre:edit-write:gateguard-fact-force",
@@ -58,7 +57,8 @@
     "frontend-design-direction",
     "codebase-onboarding",
     "skill-stocktake",
-    "strategic-compact"
+    "strategic-compact",
+    "continuous-learning-v2"
   ],
   "agents": [
     "build-error-resolver",
@@ -95,7 +95,6 @@
     "vue-review"
   ],
   "optional_next_stage": [
-    "continuous-learning-v2",
     "living-docs-governance",
     "harness-optimizer",
     "ai-regression-testing"

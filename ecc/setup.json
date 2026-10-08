@@ -11,7 +11,6 @@
       "pre:bash:gateguard-fact-force",
       "pre:powershell:gateguard-fact-force",
       "pre:write:doc-file-warning",
-      "pre:observe:continuous-learning",
       "pre:governance-capture",
       "pre:mcp-health-check",
       "pre:edit-write:gateguard-fact-force",
