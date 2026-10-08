@@ -38,7 +38,7 @@ config/my-ecc-profile.json
 Current profile state is defined by that file. At the time this document was last synchronized, it uses:
 
 ```text
-profile_version: 9
+profile_version: 10
 hook_profile: standard
 hooks_enabled: true
 ```
@@ -263,7 +263,7 @@ The profile is intentionally focused on the project's Go/Python/Vue/database sta
 
 The active profile deliberately includes:
 
-- **Skills:** stack/domain patterns plus `frontend-design-direction`, `codebase-onboarding`, `skill-stocktake`, `strategic-compact`, and non-workflow API/contract, production, and deployment guidance.
+- **Skills:** stack/domain patterns plus `frontend-design-direction`, `codebase-onboarding`, `skill-stocktake`, `strategic-compact`, `continuous-learning-v2`, and non-workflow API/contract, production, and deployment guidance.
 - **Agents:** stack-specific build/review agents plus `typescript-reviewer`, `a11y-architect`, `performance-optimizer`, and `type-design-analyzer`.
 
 The profile intentionally excludes generic `documentation-lookup` because Context7 is already routed directly by the global `CLAUDE.md`/`code-intelligence` policy. Generic `security-review` is also excluded because the canonical `security-guidance` plugin, `security-reviewer`, and stack-specific security skills already cover the global security lanes; the upstream skill is not sufficiently aligned with the project's Go/Python/Vue stack to justify another always-available layer.
@@ -511,6 +511,8 @@ Before considering a customization complete:
 [ ] If upstream-related, Sync ECC upstream release still passes
 [ ] If Hooks changed, the effective Hook set was reviewed
 [ ] If strategic-compact is enabled, no duplicate custom context-monitor/auto-compact Hook exists
+[ ] If continuous-learning-v2 is enabled, its external `CLV2_CONFIG` is configured and the upstream `skills/continuous-learning-v2/config.json` remains unchanged
+[ ] If continuous-learning-v2 is enabled, `/evolve` and global instinct promotion remain manual
 ```
 
 ## 12. Maintenance principle
