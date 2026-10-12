@@ -85,7 +85,7 @@ orchestrator level.
 
 my-ECC does not infer company gateway load, modify the active session model through Hooks, or add a second model-routing Agent. Superpowers owns workflow-level model selection; my-ECC owns the default agent model policy.
 
-The four mechanical agents are pinned to Haiku to preserve Sonnet capacity. Other selected agents intentionally inherit the current session model so that switching the session between Sonnet and Haiku changes their model without editing the plugin.
+The four mechanical agents are pinned to Haiku to preserve Sonnet capacity. Other selected agents intentionally inherit the current session model so that switching the session between Sonnet and Haiku changes their default model without editing the plugin. When a specific task requires a different judgment tier, the workflow orchestrator may use a per-invocation model override where the active Claude Code runtime supports it; do not add a global subagent-model override merely to handle exceptional high-risk tasks. Verify actual runtime/provider model resolution rather than assuming an alias selects a particular backend model.
 
 Do not add `CLAUDE_CODE_SUBAGENT_MODEL` as a global default merely to implement this policy.
 
@@ -203,7 +203,7 @@ Playwright Test CLI
 Chrome DevTools MCP (diagnostic escalation)
 ```
 
-with Playwright MCP reserved for specialized exploratory cases or explicit user requests.
+with Playwright MCP reserved for capability gaps that the CLI cannot cover or explicit user requests. Named CLI sessions and persistent profiles mean persistence alone is not a reason to switch to MCP. The agent also uses condition-based UI assertions or waits for a specific expected response rather than treating `networkidle` as the default test-readiness signal.
 
 This divergence cannot be expressed through `config/my-ecc-profile.json` because the profile selects the agent but does not override its internal tool-routing instructions. Keep the divergence documented, review it when upstream changes `agents/e2e-runner.md`, and reapply the local routing intentionally after upstream release synchronization when necessary.
 

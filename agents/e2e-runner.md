@@ -61,11 +61,14 @@ npx playwright show-report
 ### Playwright MCP
 
 Use Playwright MCP only when its capabilities provide material value beyond the CLI, such as:
-- Persistent browser context or a long-running exploratory loop
 - Rich MCP-based page introspection that the current CLI flow cannot provide
+- A long-running exploratory workflow that genuinely needs an MCP-specific interaction
 - A user explicitly requests Playwright MCP
 
-Do not invoke Playwright MCP merely because browser automation is required.
+Do not choose Playwright MCP solely for persistent browser state: `playwright-cli`
+supports named sessions and persistent profiles. Try those CLI capabilities first
+when they meet the task. Do not invoke Playwright MCP merely because browser
+automation or a persistent context is required.
 
 ### Chrome DevTools MCP
 
@@ -135,7 +138,7 @@ test('flaky: market search', async ({ page }) => {
 // npx playwright test --repeat-each=10
 ```
 
-Common causes: race conditions (use auto-wait locators), network timing (wait for response), animation timing (wait for `networkidle`).
+Common causes: race conditions (use auto-wait locators and web-first assertions), network timing (wait for the expected response or resulting UI state), and animation timing (prefer condition-based assertions or explicitly control animations). Do not use `networkidle` as the default readiness condition; Playwright discourages it for tests.
 
 ## Success Metrics
 
