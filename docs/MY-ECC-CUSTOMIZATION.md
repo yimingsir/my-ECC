@@ -38,7 +38,7 @@ config/my-ecc-profile.json
 Current profile state is defined by that file. At the time this document was last synchronized, it uses:
 
 ```text
-profile_version: 10
+profile_version: 11
 hook_profile: standard
 hooks_enabled: true
 ```
@@ -51,7 +51,11 @@ The current curation follows these boundaries:
 - ECC workflow-heavy components that duplicate Superpowers are excluded from the global profile.
 - Stack/domain knowledge, specialist reviewers, build/test resolvers, security, accessibility, performance, type-design, and explicit utility commands remain available.
 - `strategic-compact` is enabled as ECC runtime/context guidance; it does not own task workflow.
-- `continuous-learning-v2` is enabled as an observational knowledge layer; `living-docs-governance`, `harness-optimizer`, and `ai-regression-testing` remain deferred rather than globally enabled.
+- `continuous-learning-v2` is enabled as an observational knowledge layer.
+- `living-docs-governance` is enabled for maintain-phase documentation governance. It complements `codebase-onboarding`: onboarding maps an unfamiliar repository, while living-docs governance maintains canonical documentation roles over time. Reuse existing docs and keep one canonical owner per fact; do not create four new documents by default.
+- `harness-optimizer` and `ai-regression-testing` remain deferred.
+- `code-simplifier` remains unselected; it is an optional post-change simplification agent, not a mandatory step in the Superpowers workflow.
+- Dead-code cleanup remains intentionally unselected: upstream `.opencode/commands/refactor-clean.md` is an OpenCode command and is not part of this Claude Code profile's `commands/` set; `agents/refactor-cleaner.md` relies primarily on JavaScript/TypeScript tooling (`knip`, `depcheck`, `ts-prune`) and does not provide a suitable stack-aware workflow for this profile's Go/Python/Vue projects. Reconsider only if a concrete, stack-appropriate cleanup workflow adds value beyond existing reviewers and deterministic tooling.
 
 The generator is:
 
