@@ -1,6 +1,6 @@
 {
   "name": "my-ecc",
-  "version": "2.2.3-my.10",
+  "version": "2.2.3-my.11",
   "description": "Curated ECC profile for Go/Python/Vue/PostgreSQL/MySQL/Redis projects, designed to complement Superpowers.",
   "author": {
     "name": "yimingsir",
@@ -61,6 +61,7 @@
     "./skills/vue-patterns",
     "./skills/frontend-design-direction",
     "./skills/codebase-onboarding",
+    "./skills/living-docs-governance",
     "./skills/skill-stocktake",
     "./skills/strategic-compact",
     "./skills/continuous-learning-v2"
