@@ -267,7 +267,7 @@ The profile is intentionally focused on the project's Go/Python/Vue/database sta
 
 The active profile deliberately includes:
 
-- **Skills:** stack/domain patterns plus `frontend-design-direction`, `codebase-onboarding`, `skill-stocktake`, `strategic-compact`, `continuous-learning-v2`, and non-workflow API/contract, production, and deployment guidance.
+- **Skills:** stack/domain patterns plus `frontend-design-direction`, `codebase-onboarding`, `living-docs-governance`, `skill-stocktake`, `strategic-compact`, `continuous-learning-v2`, and non-workflow API/contract, production, and deployment guidance.
 - **Agents:** stack-specific build/review agents plus `typescript-reviewer`, `a11y-architect`, `performance-optimizer`, and `type-design-analyzer`.
 
 The profile intentionally excludes generic `documentation-lookup` because Context7 is already routed directly by the global `CLAUDE.md`/`code-intelligence` policy. Generic `security-review` is also excluded because the canonical `security-guidance` plugin, `security-reviewer`, and stack-specific security skills already cover the global security lanes; the upstream skill is not sufficiently aligned with the project's Go/Python/Vue stack to justify another always-available layer.
@@ -284,7 +284,6 @@ The following were intentionally removed from the global profile because their b
 
 The following remain deferred rather than globally enabled:
 
-- `living-docs-governance` — useful for large documentation-heavy projects but adds governance ceremony beyond the default workflow.
 - `harness-optimizer` — intentionally excluded while the Claude Code harness itself is being curated, to avoid a second self-optimization control loop.
 
 `test-coverage` and `quality-gate` remain as explicit commands because they are operator-invoked utilities rather than primary workflow owners.
@@ -363,7 +362,7 @@ push main
 
 Generated files are not in the trigger paths, so the generated commit does not recursively trigger this workflow.
 
-**Normal usage:** edit the profile, commit/push, and let the workflow regenerate the artifacts. Running the generator locally first is recommended for faster feedback.
+**Normal usage:** edit the profile and regenerate derived artifacts before opening/updating a PR, because the PR validation workflow runs `apply-my-ecc-profile.mjs --check` and expects committed outputs to be current. The `main`-branch sync workflow is a safety net that regenerates artifacts after merge; it does not replace PR validation.
 
 ### 8.2 `sync-upstream-release.yml`
 
