@@ -38,7 +38,7 @@ config/my-ecc-profile.json
 Current profile state is defined by that file. At the time this document was last synchronized, it uses:
 
 ```text
-profile_version: 11
+profile_version: 12
 hook_profile: standard
 hooks_enabled: true
 ```
