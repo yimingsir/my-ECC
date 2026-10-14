@@ -267,14 +267,15 @@ The profile is intentionally focused on the project's Go/Python/Vue/database sta
 
 The active profile deliberately includes:
 
-- **Skills:** stack/domain patterns plus `frontend-design-direction`, `codebase-onboarding`, `living-docs-governance`, `skill-stocktake`, `strategic-compact`, `continuous-learning-v2`, and non-workflow API/contract, production, and deployment guidance.
+- **Skills:** stack/domain patterns plus `codebase-onboarding`, `living-docs-governance`, `skill-stocktake`, `strategic-compact`, `continuous-learning-v2`, and non-workflow API/contract, production, and deployment guidance.
 - **Agents:** stack-specific build/review agents plus `typescript-reviewer`, `a11y-architect`, `performance-optimizer`, and `type-design-analyzer`.
 
 The profile intentionally excludes generic `documentation-lookup` because Context7 is already routed directly by the global `CLAUDE.md`/`code-intelligence` policy. Generic `security-review` is also excluded because the canonical `security-guidance` plugin, `security-reviewer`, and stack-specific security skills already cover the global security lanes; the upstream skill is not sufficiently aligned with the project's Go/Python/Vue stack to justify another always-available layer.
 - **Commands:** explicit build/test/review/security/quality utilities that do not establish a competing primary workflow.
 
-The following were intentionally removed from the global profile because their behavior overlaps with Superpowers or is poorly aligned with the curated stack:
+The following were intentionally removed from the global profile because their behavior overlaps with canonical capabilities or is poorly aligned with the curated stack:
 
+- Skill: `frontend-design-direction` — its broad visual-direction role overlaps with the canonical Anthropic `frontend-design` plugin enabled in the consuming configuration. Keep repository-grounded UI decision discovery in the local `frontend-design-discovery` skill; do not load two broad visual-design skills by default.
 - Skill: `search-first` — its own research-before-coding workflow is better treated as part of Superpowers routing/research when applicable.
 - Skill: `documentation-lookup` — a thin Context7 wrapper; repository/tool routing already sends versioned library and API questions directly to Context7.
 - Skill: `security-review` — useful generic security material, but overlaps with the canonical `security-guidance` plugin plus `security-reviewer` and stack-specific security skills, while its examples skew toward non-project frameworks.
