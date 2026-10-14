@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "my-ecc",
-  "profile_version": 11,
+  "profile_version": 12,
   "description": "Curated ECC profile for Go/Python/Vue/PostgreSQL/MySQL/Redis projects, designed to complement Superpowers.",
   "hook_profile": "standard",
   "hooks_enabled": true,
@@ -54,7 +54,6 @@
     "production-audit",
     "deployment-patterns",
     "vue-patterns",
-    "frontend-design-direction",
     "codebase-onboarding",
     "living-docs-governance",
     "skill-stocktake",
