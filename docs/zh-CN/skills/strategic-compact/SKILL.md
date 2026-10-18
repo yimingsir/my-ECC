@@ -48,7 +48,7 @@ origin: ECC
 若没有提醒，检查以下项目：
 
 - `config/my-ecc-profile.json` 选中了 `strategic-compact`，且 `disabled_hooks` 不包含 `pre:edit-write:suggest-compact`。
-- 生成后的 `ecc/setup.json` 中 `hooks.enabled` 为 `true)，`hooks.disabled` 不包含该 Hook ID。
+- 生成后的 `ecc/setup.json` 中 `hooks.enabled` 为 `true`，`hooks.disabled` 不包含该 Hook ID。
 - 运行时没有通过 `ECC_HOOKS_ENABLED=false`、`ECC_DISABLED_HOOKS` 或插件选项覆盖禁用 Hook。
 - 当前 Hook profile 为 `standard` 或 `strict`；该 Hook 不在 `minimal` profile 中运行。
 - Hook 输入包含可读取的 `transcript_path` 和 usage 记录；否则 Token 信号会静默跳过，但工具调用计数信号仍可工作。
@@ -56,7 +56,7 @@ origin: ECC
 ## 配置
 
 - `COMPACT_THRESHOLD` — 首次按工具调用次数提醒的阈值，默认 `50`。
-- `COMPACT_CONTEXT_THRESHOLD` — 上下文 Token 提醒阈值，标准 200K 窗口默认 `160000)，1M 窗口默认 `250000)；设为 `0` 可关闭 Token 信号。
+- `COMPACT_CONTEXT_THRESHOLD` — 上下文 Token 提醒阈值，标准 200K 窗口默认 `160000`，1M 窗口默认 `250000`；设为 `0` 可关闭 Token 信号。
 - `COMPACT_CONTEXT_INTERVAL` — 超过阈值后每增加多少 Token 再提醒，默认 `60000`。
 - `COMPACT_STATE_TTL_DAYS` — 清理临时目录中过期会话计数状态的天数，默认 `14`。
 - `ECC_CONTEXT_WINDOW_TOKENS` — 显式指定上下文窗口大小，优先于自动检测。
