@@ -187,14 +187,19 @@ A local change to an upstream-owned implementation is acceptable only when the b
 
 Do not edit upstream Hook registries merely to disable local behavior.
 
-### Strategic compact runtime divergence
+### Strategic compact runtime overlay
 
-The curated `strategic-compact` behavior intentionally diverges from upstream in two small places:
+The curated `strategic-compact` behavior intentionally diverges from upstream in a small, explicit overlay:
 
-- `hooks/hooks.json`: the `pre:edit-write:suggest-compact` registration uses matcher `.*`, so context pressure is checked before all tool calls. The upstream `Edit|Write` matcher could postpone the reminder throughout research/read-heavy phases and counted only those matching calls, despite the Skill describing a session tool-call threshold.
-- `scripts/hooks/suggest-compact.js`: when the latest transcript usage falls below the configured threshold (as after `/compact`), the saved context bucket is reset. Without this, a prior reminder could suppress the next reminder after compaction until the old bucket was exceeded.
+- `hooks/hooks.json`: set the `pre:edit-write:suggest-compact` registration matcher to `.*`, so context pressure is checked before all tool calls rather than only Edit/Write.
+- `scripts/hooks/suggest-compact.js`: reset the saved context bucket when transcript usage falls below the configured threshold (as after `/compact`), allowing the reminder to fire again as context grows.
+- `skills/strategic-compact/SKILL.md` and `docs/zh-CN/skills/strategic-compact/SKILL.md`: keep the English and Simplified Chinese guidance aligned with runtime behavior.
 
-The English and Simplified Chinese Skill documents are kept aligned with this behavior. Regression coverage in `tests/hooks/suggest-compact.test.js` checks both registration/activation and re-arming after compaction. During upstream sync, review these paths for equivalent upstream fixes before preserving the local divergence.
+Do not maintain these changes by manually editing upstream-owned files. `scripts/apply-strategic-compact-overlay.js` is the single source of truth for the local transformations; `scripts/apply-my-ecc-profile.mjs` applies it during generation and checks it in `--check` mode. The overlay updates `hooks/hooks.metadata.json` fingerprints from the transformed registry.
+
+The upstream-release workflow treats conflicts in these five paths as overlay-managed: it keeps the upstream side of each conflicting file, completes the merge, and then reapplies the overlay. If an upstream change makes a transformation anchor unrecognizable, the overlay exits non-zero before profile generation/push; do not weaken this fail-closed behavior or blindly preserve stale local code. Review whether upstream has implemented an equivalent fix, update the overlay intentionally if needed, and rerun both `tests/hooks/strategic-compact-overlay.test.js` and `tests/hooks/suggest-compact.test.js`.
+
+The overlay regression test covers both a clean upstream baseline (successful, repeatable application) and an incompatible upstream change in the patched code region (failure without partial writes). This is a fixture-based safety test; the full scheduled upstream-release merge still needs validation in GitHub Actions when a real upstream release is available.
 
 ### Local agent routing divergence
 
@@ -391,7 +396,7 @@ The workflow:
 3. Resolves the release tag's commit and its `VERSION` file.
 4. Merges the release into `main` when that release commit is not already contained.
 5. If the release commit is already contained, it still reconciles the fork's root `VERSION` to the release tag's `VERSION` value.
-6. Permits expected merge conflicts for generated overlay files (`.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `ecc/setup.json`, `.mcp.json`) and `VERSION`; generated files are regenerated afterward, while `VERSION` is reconciled to the upstream release tag value. Unexpected conflicts fail the workflow.
+6. Permits expected merge conflicts for generated overlay files (`.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `ecc/setup.json`, `.mcp.json`), `VERSION`, and the five explicitly managed strategic-compact overlay paths. For overlay paths, the workflow keeps the upstream side and reapplies the local overlay after the merge; unrecognized upstream code shapes fail closed. Unexpected conflicts fail the workflow for manual review.
 7. Re-runs `node scripts/apply-my-ecc-profile.mjs`.
 8. Commits generated overlay changes.
 9. Pushes `main` using `WORKFLOW_TOKEN` rather than the Actions `GITHUB_TOKEN`, because an upstream release may add or modify `.github/workflows/*` and GitHub requires the token used for that push to have workflow-write permission. The `WORKFLOW_TOKEN` secret should be a repository-scoped fine-grained PAT with `Contents: Read and write` and `Workflows: Read and write`.
