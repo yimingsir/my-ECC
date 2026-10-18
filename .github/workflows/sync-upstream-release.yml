@@ -155,7 +155,7 @@ jobs:
           node tests/hooks/suggest-compact.test.js
 
           mapfile -t AGENT_PATHS < <(node -e 'const fs=require("fs"); const p=JSON.parse(fs.readFileSync("config/my-ecc-profile.json","utf8")); console.log(p.agents.map(a => "agents/" + a + ".md").join("\n"));')
-          GENERATED_PATHS=(.claude-plugin/plugin.json .claude-plugin/marketplace.json ecc/setup.json .mcp.json "${AGENT_PATHS[@]}")
+          GENERATED_PATHS=(.claude-plugin/plugin.json .claude-plugin/marketplace.json ecc/setup.json .mcp.json hooks/hooks.json hooks/hooks.metadata.json scripts/hooks/suggest-compact.js skills/strategic-compact/SKILL.md docs/zh-CN/skills/strategic-compact/SKILL.md "${AGENT_PATHS[@]}")
           if ! git diff --quiet -- "${GENERATED_PATHS[@]}"; then
             git add -- "${GENERATED_PATHS[@]}"
             git commit -m "chore: refresh my-ECC curated profile"
