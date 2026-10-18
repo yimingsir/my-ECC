@@ -36,7 +36,13 @@ function writeFixture(root, unsupportedUpstreamChange = false) {
     let content = fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
 
     if (relativePath === 'hooks/hooks.json') {
-      content = content.replace('"matcher": ".*"', '"matcher": "Edit|Write"');
+      const config = JSON.parse(content);
+      const registration = config.hooks.PreToolUse.find(entry =>
+        entry.hooks.some(hook => String(hook.command).includes('scripts/hooks/suggest-compact.js'))
+      );
+      assert.ok(registration, 'upstream fixture must register suggest-compact.js');
+      registration.matcher = 'Edit|Write';
+      content = JSON.stringify(config, null, 2) + '\n';
     } else if (relativePath === 'scripts/hooks/suggest-compact.js') {
       const patched = [
         'if (bucket < 0) {',
