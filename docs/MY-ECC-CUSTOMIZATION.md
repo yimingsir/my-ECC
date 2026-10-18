@@ -391,13 +391,13 @@ Purpose: keep the fork synchronized with the latest `affaan-m/ECC` release while
 
 The workflow:
 
-1. Gets the latest upstream release tag.
-2. Fetches upstream tags.
+1. Checks out the fork, sets up Node.js 20, and installs the locked dependencies needed by Hook schema validation.
+2. Gets the latest upstream release tag and fetches upstream tags.
 3. Resolves the release tag's commit and its `VERSION` file.
 4. Merges the release into `main` when that release commit is not already contained.
 5. If the release commit is already contained, it still reconciles the fork's root `VERSION` to the release tag's `VERSION` value.
 6. Permits expected merge conflicts for generated overlay files (`.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `ecc/setup.json`, `.mcp.json`), `VERSION`, and the five explicitly managed strategic-compact overlay paths. For overlay paths, the workflow keeps the upstream side and reapplies the local overlay after the merge; unrecognized upstream code shapes fail closed. Unexpected conflicts fail the workflow for manual review.
-7. Re-runs `node scripts/apply-my-ecc-profile.mjs`.
+7. Re-runs `node scripts/apply-my-ecc-profile.mjs`, then verifies generated output with `--check`, validates Hook schema/fingerprints, and runs both strategic-compact regression suites before pushing.
 8. Commits generated overlay changes.
 9. Pushes `main` using `WORKFLOW_TOKEN` rather than the Actions `GITHUB_TOKEN`, because an upstream release may add or modify `.github/workflows/*` and GitHub requires the token used for that push to have workflow-write permission. The `WORKFLOW_TOKEN` secret should be a repository-scoped fine-grained PAT with `Contents: Read and write` and `Workflows: Read and write`.
 10. Synchronizes the upstream release tag on the fork.
