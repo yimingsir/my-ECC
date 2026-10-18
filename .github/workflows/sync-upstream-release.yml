@@ -24,6 +24,15 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund --loglevel=error
+
       - name: Get latest upstream release
         id: upstream
         env:
@@ -138,6 +147,12 @@ jobs:
 
           echo "Re-applying my-ECC curated profile..."
           node scripts/apply-my-ecc-profile.mjs
+
+          echo "Validating generated profile and strategic-compact overlay..."
+          node scripts/apply-my-ecc-profile.mjs --check
+          node scripts/ci/validate-hooks.js
+          node tests/hooks/strategic-compact-overlay.test.js
+          node tests/hooks/suggest-compact.test.js
 
           mapfile -t AGENT_PATHS < <(node -e 'const fs=require("fs"); const p=JSON.parse(fs.readFileSync("config/my-ecc-profile.json","utf8")); console.log(p.agents.map(a => "agents/" + a + ".md").join("\n"));')
           GENERATED_PATHS=(.claude-plugin/plugin.json .claude-plugin/marketplace.json ecc/setup.json .mcp.json "${AGENT_PATHS[@]}")
