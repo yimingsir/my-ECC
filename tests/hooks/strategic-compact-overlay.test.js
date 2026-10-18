@@ -58,7 +58,7 @@ const UPSTREAM_CHINESE_SECTION = [
   '环境变量：',
   '',
   '* `COMPACT_THRESHOLD` — 首次建议前的工具调用次数（默认：50）',
-].join('\\n');
+].join('\n');
 
 function run(root, args = []) {
   return spawnSync(process.execPath, [OVERLAY, '--root', root, ...args], {
@@ -90,7 +90,7 @@ function writeFixture(root, unsupportedUpstreamChange = false) {
         "      writeFile(bucketFile, '-1');",
         '      return null;',
         '    }',
-      ].join('\n');
+].join('\n');
       assert.ok(content.includes(patched), 'fixture source must contain the known local patch');
       content = content.replace(patched, 'if (bucket < 0) return null;');
       if (unsupportedUpstreamChange) {
