@@ -133,6 +133,19 @@ if (unknownDisabledHooks.length > 0) {
   );
 }
 
+const strategicCompactHookId = 'pre:edit-write:suggest-compact';
+if (profile.skills.includes('strategic-compact')) {
+  if (!profile.hooks_enabled) {
+    fail('strategic-compact is selected but hooks_enabled is false; enable Hooks or remove the Skill from the curated profile.');
+  }
+  if (profile.disabled_hooks.includes(strategicCompactHookId)) {
+    fail('strategic-compact is selected but its reminder Hook is disabled; remove ' + strategicCompactHookId + ' from disabled_hooks.');
+  }
+  if (!hookIds.has(strategicCompactHookId)) {
+    fail('strategic-compact is selected but its reminder Hook is not registered: ' + strategicCompactHookId);
+  }
+}
+
 const applyAgentModelPolicy = (agentName, source) => {
   const frontmatter = source.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n/);
   if (!frontmatter) fail('Agent ' + agentName + ' is missing YAML frontmatter.');
