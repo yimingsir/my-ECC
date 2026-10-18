@@ -84,7 +84,7 @@ function writeFixture(root, unsupportedUpstreamChange = false) {
       content = JSON.stringify(config, null, 2) + '\n';
     } else if (relativePath === 'scripts/hooks/suggest-compact.js') {
       const patched = [
-        'if (bucket < 0) {',
+        '    if (bucket < 0) {',
         '      // A compacted transcript can fall below the threshold. Re-arm the',
         '      // context signal so a later climb back to the threshold is reported.',
         "      writeFile(bucketFile, '-1');",
