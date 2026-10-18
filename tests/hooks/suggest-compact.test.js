@@ -754,6 +754,28 @@ function runTests() {
   })) passed++;
   else failed++;
 
+  if (test('re-arms the context warning after compaction drops below threshold', () => {
+    const ctx = createContextContext();
+    const transcript = writeTranscriptFixture(170000);
+    try {
+      const first = runCompactWithInput({ session_id: ctx.sessionId, transcript_path: transcript });
+      assert.ok(first.stdout.includes('Context ~170k tokens'), 'Initial high-context run should fire');
+
+      writeTranscriptTokens(transcript, 100000);
+      const compacted = runCompactWithInput({ session_id: ctx.sessionId, transcript_path: transcript });
+      assert.strictEqual(compacted.stdout.trim(), '', 'Below-threshold run after compaction should stay silent');
+
+      writeTranscriptTokens(transcript, 170000);
+      const grownAgain = runCompactWithInput({ session_id: ctx.sessionId, transcript_path: transcript });
+      assert.ok(grownAgain.stdout.includes('Context ~170k tokens'),
+        'Context warning should fire again when the compacted session grows back to threshold');
+    } finally {
+      try { fs.unlinkSync(transcript); } catch (_err) { /* ignore */ }
+      ctx.cleanup();
+    }
+  })) passed++;
+  else failed++;
+
   if (test('honours COMPACT_CONTEXT_THRESHOLD override', () => {
     const ctx = createContextContext();
     const transcript = writeTranscriptFixture(1500);
