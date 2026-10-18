@@ -88,6 +88,31 @@ function runTests() {
   let passed = 0;
   let failed = 0;
 
+  // Registration and activation: the context signal must run before every tool,
+  // not only Edit/Write, and the selected profile must not disable it.
+  console.log('\nStrategic compact registration:');
+  if (test('registers the context monitor for every PreToolUse call and enables it in the curated profile', () => {
+    const root = path.resolve(__dirname, '..', '..');
+    const profile = JSON.parse(fs.readFileSync(path.join(root, 'config', 'my-ecc-profile.json'), 'utf8'));
+    const hookConfig = JSON.parse(fs.readFileSync(path.join(root, 'hooks', 'hooks.json'), 'utf8'));
+    const managed = JSON.parse(fs.readFileSync(path.join(root, 'ecc', 'setup.json'), 'utf8'));
+    const hookId = 'pre:edit-write:suggest-compact';
+    const registration = hookConfig.hooks.PreToolUse.find(entry =>
+      (entry.hooks || []).some(hook => String(hook.command || '').includes('scripts/hooks/suggest-compact.js'))
+    );
+
+    assert.ok(profile.skills.includes('strategic-compact'), 'strategic-compact must be selected');
+    assert.ok(!profile.disabled_hooks.includes(hookId), 'strategic-compact Hook must not be disabled');
+    assert.strictEqual(profile.hooks_enabled, true, 'curated profile should enable Hooks');
+    assert.ok(registration, 'suggest-compact.js must be registered');
+    assert.strictEqual(registration.matcher, '.*', 'context checks should run before every tool');
+    assert.ok(registration.hooks.some(hook => hook.command.includes(hookId) && hook.command.includes('standard,strict')),
+      'registration should use the profile-aware Hook runner for standard/strict profiles');
+    assert.strictEqual(managed.hooks.enabled, true, 'generated hook setup should enable Hooks');
+    assert.ok(!managed.hooks.disabled.includes(hookId), 'generated hook setup must not disable strategic-compact');
+  })) passed++;
+  else failed++;
+
   // Basic functionality
   console.log('Basic counter functionality:');
 
