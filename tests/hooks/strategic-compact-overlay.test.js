@@ -105,7 +105,7 @@ function writeFixture(root, unsupportedUpstreamChange = false) {
       const start = content.indexOf('## 工作原理');
       const end = content.indexOf('## 压缩决策指南');
       assert.ok(start >= 0 && end > start, 'Chinese Skill section boundaries must exist');
-      content = content.slice(0, start) + UPSTREAM_CHINESE_SECTION + '\\n\\n' + content.slice(end);
+      content = content.slice(0, start) + UPSTREAM_CHINESE_SECTION + '\n\n' + content.slice(end);
     }
 
     fs.writeFileSync(destination, content);
