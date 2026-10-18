@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 
 const ROOT = process.cwd();
 const PROFILE = path.join(ROOT, 'config', 'my-ecc-profile.json');
@@ -63,6 +64,15 @@ const fail = (message) => {
   console.error('[my-ECC] ERROR: ' + message);
   process.exit(1);
 };
+
+// Reapply the small, tested local patch layer over upstream-owned strategic-compact files.
+const overlayArgs = [path.join(ROOT, 'scripts', 'apply-strategic-compact-overlay.js')];
+if (CHECK) overlayArgs.push('--check');
+const overlayResult = spawnSync(process.execPath, overlayArgs, { cwd: ROOT, encoding: 'utf8' });
+if (overlayResult.stdout) process.stdout.write(overlayResult.stdout);
+if (overlayResult.stderr) process.stderr.write(overlayResult.stderr);
+if (overlayResult.error) fail('Could not run strategic-compact overlay: ' + overlayResult.error.message);
+if (overlayResult.status !== 0) fail('Strategic-compact overlay failed; refusing to generate profile outputs.');
 
 const readJson = (file) => {
   try { return JSON.parse(fs.readFileSync(file, 'utf8')); }
