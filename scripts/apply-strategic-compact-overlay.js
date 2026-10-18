@@ -8,6 +8,7 @@
  */
 const fs = require('node:fs');
 const path = require('node:path');
+const crypto = require('node:crypto');
 const { withRefreshedFingerprints } = require('./lib/hooks-config.js');
 
 const args = process.argv.slice(2);
@@ -130,6 +131,14 @@ function transformChineseSkill(source) {
   }
   const currentSection = source.slice(start, end).trimEnd();
   if (currentSection === CHINESE_SECTION.trimEnd()) return source;
+
+  // Only replace the exact upstream baseline section we audited. If upstream
+  // adds or changes content here, stop rather than silently overwriting it.
+  const upstreamBaselineSha256 = '0d23d0faea7591d89ab2afe38a8a59328a90eefdde22ffa0dee278d6f9e6d3a9';
+  const currentSha256 = crypto.createHash('sha256').update(currentSection).digest('hex');
+  if (currentSha256 !== upstreamBaselineSha256) {
+    fail('Chinese strategic-compact Skill section differs from both the known upstream baseline and the curated overlay; review upstream changes before updating the overlay.');
+  }
   return source.slice(0, start) + CHINESE_SECTION + source.slice(end);
 }
 
