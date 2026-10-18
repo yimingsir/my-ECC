@@ -177,7 +177,12 @@ function buildContextSuggestion(transcriptPath, bucketFile, env) {
 
     const interval = resolveContextInterval(env);
     const bucket = computeContextBucket(usage.tokens, threshold, interval);
-    if (bucket < 0) return null;
+    if (bucket < 0) {
+      // A compacted transcript can fall below the threshold. Re-arm the
+      // context signal so a later climb back to the threshold is reported.
+      writeFile(bucketFile, '-1');
+      return null;
+    }
 
     const lastBucket = readLastContextBucket(bucketFile);
     if (bucket <= lastBucket) return null;
