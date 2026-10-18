@@ -92,7 +92,7 @@ function writeFixture(root, unsupportedUpstreamChange = false) {
         '    }',
 ].join('\n');
       assert.ok(content.includes(patched), 'fixture source must contain the known local patch');
-      content = content.replace(patched, 'if (bucket < 0) return null;');
+      content = content.replace(patched, '    if (bucket < 0) return null;');
       if (unsupportedUpstreamChange) {
         content = content.replace('if (bucket < 0) return null;', 'if (bucket < 0) { return null; }');
       }
