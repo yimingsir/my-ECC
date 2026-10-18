@@ -97,6 +97,8 @@ jobs:
               while IFS= read -r conflict; do
                 case "$conflict" in
                   .claude-plugin/plugin.json|.claude-plugin/marketplace.json|ecc/setup.json|.mcp.json|VERSION) ;;
+                  # Rebuild the curated strategic-compact overlay on top of upstream versions.
+                  hooks/hooks.json|hooks/hooks.metadata.json|scripts/hooks/suggest-compact.js|skills/strategic-compact/SKILL.md|docs/zh-CN/skills/strategic-compact/SKILL.md) ;;
                   *)
                     if ! node -e 'const fs=require("fs"); const p=JSON.parse(fs.readFileSync("config/my-ecc-profile.json","utf8")); const path=process.argv[1]; const name=path.startsWith("agents/") ? path.slice(7,-3) : ""; const generatedModelOnly=!["e2e-runner"].includes(name); process.exit(p.agents.includes(name) && generatedModelOnly ? 0 : 1);' "$conflict"; then
                       BAD_CONFLICT=true
@@ -109,6 +111,9 @@ jobs:
                 printf '%s\n' "$CONFLICTS"
                 exit 1
               fi
+              # For generated artifacts and the explicitly owned strategic-compact overlay,
+              # keep upstream as the merge base. The profile generator reapplies the overlay
+              # afterward and fails closed if an upstream code change invalidates its anchors.
               while IFS= read -r conflict; do
                 git checkout --theirs "$conflict"
                 git add "$conflict"
