@@ -38,7 +38,7 @@ config/my-ecc-profile.json
 Current profile state is defined by that file. At the time this document was last synchronized, it uses:
 
 ```text
-profile_version: 12
+profile_version: 13
 hook_profile: standard
 hooks_enabled: true
 ```
@@ -186,6 +186,15 @@ A local change to an upstream-owned implementation is acceptable only when the b
 6. Verify an upstream release sync before considering the change complete.
 
 Do not edit upstream Hook registries merely to disable local behavior.
+
+### Strategic compact runtime divergence
+
+The curated `strategic-compact` behavior intentionally diverges from upstream in two small places:
+
+- `hooks/hooks.json`: the `pre:edit-write:suggest-compact` registration uses matcher `.*`, so context pressure is checked before all tool calls. The upstream `Edit|Write` matcher could postpone the reminder throughout research/read-heavy phases and counted only those matching calls, despite the Skill describing a session tool-call threshold.
+- `scripts/hooks/suggest-compact.js`: when the latest transcript usage falls below the configured threshold (as after `/compact`), the saved context bucket is reset. Without this, a prior reminder could suppress the next reminder after compaction until the old bucket was exceeded.
+
+The English and Simplified Chinese Skill documents are kept aligned with this behavior. Regression coverage in `tests/hooks/suggest-compact.test.js` checks both registration/activation and re-arming after compaction. During upstream sync, review these paths for equivalent upstream fixes before preserving the local divergence.
 
 ### Local agent routing divergence
 
