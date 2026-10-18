@@ -103,8 +103,8 @@ const CHINESE_SECTION = `## 工作原理
 若没有提醒，检查以下项目：
 
 - \`config/my-ecc-profile.json\` 选中了 \`strategic-compact\`，且 \`disabled_hooks\` 不包含 \`pre:edit-write:suggest-compact\`。
-- 生成后的 \`ecc/setup.json\` 中 \`hooks.enabled\` 为 \`true\`，`hooks.disabled` 不包含该 Hook ID。
-- 运行时没有通过 \`ECC_HOOKS_ENABLED=false\`、`ECC_DISABLED_HOOKS\` 或插件选项覆盖禁用 Hook。
+- 生成后的 \`ecc/setup.json\` 中 \`hooks.enabled\` 为 \`true\`，\`hooks.disabled\` 不包含该 Hook ID。
+- 运行时没有通过 \`ECC_HOOKS_ENABLED=false\`、\`ECC_DISABLED_HOOKS\` 或插件选项覆盖禁用 Hook。
 - 当前 Hook profile 为 \`standard\` 或 \`strict\`；该 Hook 不在 \`minimal\` profile 中运行。
 - Hook 输入包含可读取的 \`transcript_path\` 和 usage 记录；否则 Token 信号会静默跳过，但工具调用计数信号仍可工作。
 
