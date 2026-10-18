@@ -20,7 +20,7 @@
       {
         "id": "pre:edit-write:suggest-compact",
         "description": "Suggest manual compaction at logical intervals",
-        "fingerprint": "d99998a8f039"
+        "fingerprint": "b054972ab61e"
       },
       {
         "id": "pre:observe:continuous-learning",

@@ -37,3 +37,9 @@ jobs:
 
       - name: Validate managed hook flags
         run: node tests/lib/hook-flags.test.js
+
+      - name: Test strategic compact overlay and upstream-drift handling
+        run: node tests/hooks/strategic-compact-overlay.test.js
+
+      - name: Test strategic compact reminders
+        run: node tests/hooks/suggest-compact.test.js

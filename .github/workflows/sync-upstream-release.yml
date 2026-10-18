@@ -24,6 +24,15 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund --loglevel=error
+
       - name: Get latest upstream release
         id: upstream
         env:
@@ -97,6 +106,8 @@ jobs:
               while IFS= read -r conflict; do
                 case "$conflict" in
                   .claude-plugin/plugin.json|.claude-plugin/marketplace.json|ecc/setup.json|.mcp.json|VERSION) ;;
+                  # Rebuild the curated strategic-compact overlay on top of upstream versions.
+                  hooks/hooks.json|hooks/hooks.metadata.json|scripts/hooks/suggest-compact.js|skills/strategic-compact/SKILL.md|docs/zh-CN/skills/strategic-compact/SKILL.md) ;;
                   *)
                     if ! node -e 'const fs=require("fs"); const p=JSON.parse(fs.readFileSync("config/my-ecc-profile.json","utf8")); const path=process.argv[1]; const name=path.startsWith("agents/") ? path.slice(7,-3) : ""; const generatedModelOnly=!["e2e-runner"].includes(name); process.exit(p.agents.includes(name) && generatedModelOnly ? 0 : 1);' "$conflict"; then
                       BAD_CONFLICT=true
@@ -109,6 +120,9 @@ jobs:
                 printf '%s\n' "$CONFLICTS"
                 exit 1
               fi
+              # For generated artifacts and the explicitly owned strategic-compact overlay,
+              # keep upstream as the merge base. The profile generator reapplies the overlay
+              # afterward and fails closed if an upstream code change invalidates its anchors.
               while IFS= read -r conflict; do
                 git checkout --theirs "$conflict"
                 git add "$conflict"
@@ -134,8 +148,14 @@ jobs:
           echo "Re-applying my-ECC curated profile..."
           node scripts/apply-my-ecc-profile.mjs
 
+          echo "Validating generated profile and strategic-compact overlay..."
+          node scripts/apply-my-ecc-profile.mjs --check
+          node scripts/ci/validate-hooks.js
+          node tests/hooks/strategic-compact-overlay.test.js
+          node tests/hooks/suggest-compact.test.js
+
           mapfile -t AGENT_PATHS < <(node -e 'const fs=require("fs"); const p=JSON.parse(fs.readFileSync("config/my-ecc-profile.json","utf8")); console.log(p.agents.map(a => "agents/" + a + ".md").join("\n"));')
-          GENERATED_PATHS=(.claude-plugin/plugin.json .claude-plugin/marketplace.json ecc/setup.json .mcp.json "${AGENT_PATHS[@]}")
+          GENERATED_PATHS=(.claude-plugin/plugin.json .claude-plugin/marketplace.json ecc/setup.json .mcp.json hooks/hooks.json hooks/hooks.metadata.json scripts/hooks/suggest-compact.js skills/strategic-compact/SKILL.md docs/zh-CN/skills/strategic-compact/SKILL.md "${AGENT_PATHS[@]}")
           if ! git diff --quiet -- "${GENERATED_PATHS[@]}"; then
             git add -- "${GENERATED_PATHS[@]}"
             git commit -m "chore: refresh my-ECC curated profile"
