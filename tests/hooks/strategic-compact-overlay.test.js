@@ -21,6 +21,45 @@ const FILES = [
   'docs/zh-CN/skills/strategic-compact/SKILL.md',
 ];
 
+const UPSTREAM_CHINESE_SECTION = [
+  '## 工作原理',
+  '',
+  '`suggest-compact.js` 脚本在 PreToolUse (Edit/Write) 时运行，并且：',
+  '',
+  '1. **跟踪工具调用** — 统计会话中的工具调用次数',
+  '2. **阈值检测** — 在可配置的阈值处建议压缩（默认：50次调用）',
+  '3. **定期提醒** — 达到阈值后，每25次调用提醒一次',
+  '',
+  '## 钩子设置',
+  '',
+  '**作为插件安装？** 无需任何设置。插件的 `hooks/hooks.json` 已经注册了 `suggest-compact.js`（钩子 ID `pre:edit-write:suggest-compact`，在 `standard` 和 `strict` 钩子配置档中生效）。不要把下面的代码块复制到 `~/.claude/settings.json` — 插件安装中不存在 `~/.claude/scripts/`，并且重复注册插件钩子会导致双重执行。',
+  '',
+  '**如果是手动安装**（`./install.sh`），添加到你的 `~/.claude/settings.json`：',
+  '',
+  '```json',
+  '{',
+  '  "hooks": {',
+  '    "PreToolUse": [',
+  '      {',
+  '        "matcher": "Edit",',
+  '        "hooks": [{ "type": "command", "command": "node ~/.claude/scripts/hooks/suggest-compact.js" }]',
+  '      },',
+  '      {',
+  '        "matcher": "Write",',
+  '        "hooks": [{ "type": "command", "command": "node ~/.claude/scripts/hooks/suggest-compact.js" }]',
+  '      }',
+  '    ]',
+  '  }',
+  '}',
+  '```',
+  '',
+  '## 配置',
+  '',
+  '环境变量：',
+  '',
+  '* `COMPACT_THRESHOLD` — 首次建议前的工具调用次数（默认：50）',
+].join('\\n');
+
 function run(root, args = []) {
   return spawnSync(process.execPath, [OVERLAY, '--root', root, ...args], {
     cwd: ROOT,
@@ -66,7 +105,7 @@ function writeFixture(root, unsupportedUpstreamChange = false) {
       const start = content.indexOf('## 工作原理');
       const end = content.indexOf('## 压缩决策指南');
       assert.ok(start >= 0 && end > start, 'Chinese Skill section boundaries must exist');
-      content = content.slice(0, start) + '## 工作原理\n\n上游版本的原始工作原理说明。\n\n' + content.slice(end);
+      content = content.slice(0, start) + UPSTREAM_CHINESE_SECTION + '\\n\\n' + content.slice(end);
     }
 
     fs.writeFileSync(destination, content);
